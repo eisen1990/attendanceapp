@@ -1,5 +1,6 @@
 package com.planetory.io;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,12 +35,34 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
+        /*
+            근무 시작 버튼, Service Thread 시작으로 간다.
+            startService(intent);
+        */
         Button StartBtn = (Button)  findViewById(R.id.start_btn);
         StartBtn.setOnClickListener(new View.OnClickListener() {
+            Intent intent;
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this,"버튼 클릭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Run", Toast.LENGTH_SHORT).show();
+                intent = new Intent(MainActivity.this, TimerService.class);
+                startService(intent);
+            }
+        });
 
+        /*
+            근무 종료 버튼, Service Thread 종료한다.
+            stopService(intent);
+         */
+        Button StopBtn = (Button)  findViewById(R.id.stop_btn);
+        StopBtn.setOnClickListener(new View.OnClickListener() {
+            Intent intent;
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,"Stop", Toast.LENGTH_SHORT).show();
+                intent = new Intent(MainActivity.this, TimerService.class);
+                stopService(intent);
             }
         });
 
