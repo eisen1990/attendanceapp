@@ -25,6 +25,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".EmptyActivity" />
+
+        <service
+            android:name=".TimerService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
