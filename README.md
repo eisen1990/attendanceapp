@@ -1,4 +1,4 @@
-# attendanceapp
-Planetory application development repository
+충북대학교 정보통신공학부 EASW 연구실
 
+근태관리 시스템 프로토타입 개발을 위한 저장소
 
