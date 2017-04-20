@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -37,6 +38,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final long FINISH_INTERVAL_TIME = 2000;
+    private long backPressedTime = 0;
+    //STORE_LOCATION 값은 추후 직원의 매장 정보를 가지고 오는데 사용될 변수
+    private String STORE_LOCATION = "EASW";
 
     TextView dateNow;
     TextView wifiScan;
@@ -64,12 +70,12 @@ public class MainActivity extends AppCompatActivity
         return new SimpleDateFormat("HH:mm:ss").format(date);
     }
 
-    public String scanWifi() {
+    public String scanWifi(String location) {
         /*
             출근 버튼을 누를 경우 수행되는 Wi-Fi 스캔 함수.
+            근무자의 출근 위치를 받아서 해당 매장의 Wi-Fi를 스캔할 수 있는지 확인한다.
          */
 
-        //Wifi 관련 클래스 정의
         WifiManager wifiManager;
         ConnectivityManager connManager;
         List<ScanResult> scanResult;
@@ -91,9 +97,22 @@ public class MainActivity extends AppCompatActivity
             item.put("capabilities","Capablities : " + result.capabilities);
             item.put("freq","Freq : " + result.frequency);
             item.put("level","Signal Level : " + result.level);
+
+            Log.d("BSSID value",result.BSSID);
+            Log.d("SSID value",result.SSID);
+            Log.i("capabilities value",result.capabilities);
+            Log.i("frequency value",Integer.toString(result.frequency));
+            Log.i("level value", Integer.toString(result.level));
             list.add(item);
-            if(result.SSID.equals("EASWLabs")) MACAddr = result.BSSID;
+            //현재는 SSID 일치하는 Wifi의 MAC 주소 가지고 온다.
+            //앞으로 해당 매장에 출근했을 때 근무자의 매장 MAC 주소를 가지고 와서 해당 MAC 주소가 있는지 체크
+            //함수 반환형도 바꿔줄 것.
+            if(result.SSID.equals(location)) MACAddr = result.BSSID;
         }
+        /*
+            List View에 보여줄 세팅.
+            사용하지 않음.
+         */
         /*
         String[] from = new String[] {
                 "bssid",
@@ -110,9 +129,7 @@ public class MainActivity extends AppCompatActivity
                 R.id.Freq,
                 R.id.level
         };
-
         adapter = new SimpleAdapter( this, list, R.layout.activity_main, from, to);
-
 //        setListAdapter(adapter);
         */
 
@@ -128,6 +145,12 @@ public class MainActivity extends AppCompatActivity
 
         dateNow = (TextView) findViewById(R.id.dateNow);
         wifiScan = (TextView) findViewById(R.id.wifi);
+
+        Button StartBtn = (Button)  findViewById(R.id.start_btn);
+        Button StopBtn = (Button)  findViewById(R.id.stop_btn);
+
+        StartBtn.setOnClickListener(onClickListener);
+        StopBtn.setOnClickListener(onClickListener);
 
         Thread timerThread = new Thread(new Runnable() {
             /*
@@ -163,30 +186,6 @@ public class MainActivity extends AppCompatActivity
         });
         */
 
-        Button StartBtn = (Button)  findViewById(R.id.start_btn);
-        StartBtn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                String str = scanWifi();
-                wifiScan.setText(str);
-            }
-        });
-
-        /*
-            근무 종료 버튼, Service Thread 종료한다.
-            stopService(intent);
-         */
-        Button StopBtn = (Button)  findViewById(R.id.stop_btn);
-        StopBtn.setOnClickListener(new View.OnClickListener() {
-            Intent intent;
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this,"Stop", Toast.LENGTH_SHORT).show();
-                intent = new Intent(MainActivity.this, TimerService.class);
-                stopService(intent);
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -198,13 +197,50 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    Button.OnClickListener onClickListener = new Button.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.start_btn:
+                    /*
+                        근무 시작 버튼
+                        Wifi 스캔 및 실제 출근시간 기록
+                     */
+                    String str = scanWifi(STORE_LOCATION);
+                    wifiScan.setText(str);
+                    break;
+                case R.id.stop_btn:
+                    /*
+                        근무 종료 버튼
+                    */
+                    Toast.makeText(MainActivity.this, "Stop", Toast.LENGTH_SHORT).show();
+                    break;
+                //case R.id.break_btn:
+            }
+        }
+    };
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            /*
+                Back 버튼 두번 2초 안에 터치했을 경우 종료
+                한 번 눌렀을 경우 메세지 띄워준다.
+                기본적인 Interval은 2000ms 이지만 추후 수정 가능
+             */
+            long tempTime = System.currentTimeMillis();
+            long intervalTime = tempTime - backPressedTime;
+
+            if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+                super.onBackPressed();
+            }
+            else {
+                backPressedTime = tempTime;
+                Toast.makeText(getApplicationContext(), "Press again to exit", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
