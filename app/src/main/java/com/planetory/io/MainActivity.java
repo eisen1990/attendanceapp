@@ -3,6 +3,10 @@ package com.planetory.io;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
@@ -13,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,14 +40,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private final long FINISH_INTERVAL_TIME = 2000;
-    private long backPressedTime = 0;
+    BackPressCloseHandler backPressCloseHandler;
+
     //STORE_LOCATION 값은 추후 직원의 매장 정보를 가지고 오는데 사용될 변수
     private String STORE_LOCATION = "EASW";
+
+    private final int TIMER_ID = 0;
+    private boolean EMPLOY_STATE = false;
+
+    private Timer timer;
+
+    ClockView clockView;
 
     TextView dateNow;
     TextView wifiScan;
@@ -51,7 +65,8 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean handleMessage(Message msg) {
-            if(msg.what == 0) {
+            if(msg.what == TIMER_ID) {
+                clockView.invalidate();
                 String time = (String) msg.obj;
                 dateNow.setText(time);
             }
@@ -68,6 +83,18 @@ public class MainActivity extends AppCompatActivity
         Date date = new Date(now);
 
         return new SimpleDateFormat("HH:mm:ss").format(date);
+    }
+
+    public String getStartTimeFromDB() {
+        /*
+            DB 또는 앱에서 직원의 당일 스케줄 시작시간을 가지고 온다.
+            현재는 null 값 반환한다.
+            DB에서 받아온 Text 값을 float 형으로 교체해주는 루틴이 들어가야된다.
+         */
+        String start_time = null;
+
+
+        return start_time;
     }
 
     public String scanWifi(String location) {
@@ -136,43 +163,43 @@ public class MainActivity extends AppCompatActivity
         return MACAddr;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        backPressCloseHandler = new BackPressCloseHandler(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         dateNow = (TextView) findViewById(R.id.dateNow);
         wifiScan = (TextView) findViewById(R.id.wifi);
 
-        Button StartBtn = (Button)  findViewById(R.id.start_btn);
-        Button StopBtn = (Button)  findViewById(R.id.stop_btn);
+        clockView = (ClockView) findViewById(R.id.clock_view);
 
-        StartBtn.setOnClickListener(onClickListener);
-        StopBtn.setOnClickListener(onClickListener);
+        //DB에서 오늘의 근무 시작 시간을 가지고 온다.
+        clockView.setSTART_ANGLE(getStartTimeFromDB());
+        setButtons();
 
-        Thread timerThread = new Thread(new Runnable() {
+
+        timer = new Timer(true);
+        timer.schedule(new TimerTask() {
             /*
-                Main Activity의 UI 업데이트를 담당하는 Thread의 Runnable 구현
-                초기에 thread.run()으로 할 때 메인 Thread의 콜스택을 사용해서 안됐었음.
-                thread.start()로 실행하니 정상작동함.
+                매 1초마다 Handler에 메세지 전송해서
+                UI 업데이트를 해준다 디지털 시계 및 원호
              */
             @Override
             public void run() {
-                while(true) {
-                    try {
-                        Message msg = handler.obtainMessage();
-                        msg.what = 0;
-                        msg.obj = getFormatDateTime();
-                        handler.sendMessage(msg);
-
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) { e.printStackTrace(); }
-                }
+                try {
+                    //시계 값 전달
+                    Message msg = handler.obtainMessage();
+                    msg.what = TIMER_ID;
+                    msg.obj = getFormatDateTime();
+                    handler.sendMessage(msg);
+                } catch (Exception e) { e.printStackTrace(); }
             }
-        });
-        timerThread.start();
+        }, 1000, 1000);
 
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -197,6 +224,19 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void setButtons() {
+        //Start Button 세팅
+        Button StartBtn = (Button)  findViewById(R.id.start_btn);
+        StartBtn.setOnClickListener(onClickListener);
+
+        //Stop Button 세팅
+        Button StopBtn = (Button)  findViewById(R.id.stop_btn);
+        StopBtn.setOnClickListener(onClickListener);
+
+        Button BreakBtn = (Button)  findViewById(R.id.break_btn);
+        BreakBtn.setOnClickListener(onClickListener);
+    }
+
     Button.OnClickListener onClickListener = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -208,40 +248,31 @@ public class MainActivity extends AppCompatActivity
                      */
                     String str = scanWifi(STORE_LOCATION);
                     wifiScan.setText(str);
+                    EMPLOY_STATE = true;
+                    clockView.setClockColor("#0000FF");
                     break;
                 case R.id.stop_btn:
                     /*
                         근무 종료 버튼
                     */
                     Toast.makeText(MainActivity.this, "Stop", Toast.LENGTH_SHORT).show();
+                    EMPLOY_STATE = false;
                     break;
-                //case R.id.break_btn:
+                case R.id.break_btn:
+                    /*
+                        휴식 버튼
+                        추후 토글 키로 변경할 예정
+                     */
+                    EMPLOY_STATE = false;
+                    clockView.setClockColor("#FF0000");
+                    break;
             }
         }
     };
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            /*
-                Back 버튼 두번 2초 안에 터치했을 경우 종료
-                한 번 눌렀을 경우 메세지 띄워준다.
-                기본적인 Interval은 2000ms 이지만 추후 수정 가능
-             */
-            long tempTime = System.currentTimeMillis();
-            long intervalTime = tempTime - backPressedTime;
-
-            if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                super.onBackPressed();
-            }
-            else {
-                backPressedTime = tempTime;
-                Toast.makeText(getApplicationContext(), "Press again to exit", Toast.LENGTH_SHORT).show();
-            }
-        }
+        backPressCloseHandler.onBackPressed();
     }
 
     @Override
@@ -289,5 +320,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        timer.cancel();
+        super.onDestroy();
     }
 }

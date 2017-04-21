@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="clock_width_pixel">330</integer>
+    <dimen name="view_clock_width_pixel">330dp</dimen>
+    <integer name="clock_height_pixel">330</integer>
+    <dimen name="view_clock_height_pixel">330dp</dimen>
+
+    <integer name="clock_center_x">165</integer>
+    <integer name="clock_center_y">165</integer>
+    <integer name="clock_inner_r">123</integer>
+    <integer name="clock_thickness">4</integer>
+</resources>
