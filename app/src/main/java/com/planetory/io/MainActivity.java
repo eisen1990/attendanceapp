@@ -17,7 +17,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -33,8 +35,10 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,7 +56,13 @@ public class MainActivity extends AppCompatActivity
     private String STORE_LOCATION = "EASW";
 
     private final int TIMER_ID = 0;
-    private boolean EMPLOY_STATE = false;
+    Button StartBtn;
+    Button StopBtn;
+    ToggleButton BreakBtn;
+    private final int EMPLOY_STATE_WORK = 1;
+    private final int EMPLOY_STATE_LEAVE = 2;
+    private final int EMPLOY_STATE_BREAK = 3;
+    private int EMPLOY_STATE = EMPLOY_STATE_LEAVE;
 
     private Timer timer;
 
@@ -74,34 +84,37 @@ public class MainActivity extends AppCompatActivity
         }
     });
 
-    public String getFormatDateTime() {
-        /*
-            현재 시간을 문자열로 반환하는 함수.
-            Main Activity에서 시계 UI를 업데이트하는 Thread에서 사용된다.
-         */
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
 
-        return new SimpleDateFormat("HH:mm:ss").format(date);
-    }
 
     public String getStartTimeFromDB() {
         /*
             DB 또는 앱에서 직원의 당일 스케줄 시작시간을 가지고 온다.
-            현재는 null 값 반환한다.
+            start_time 변수는 DB로 부터 오늘의 일과 시작 시간을 받아온다.
+            start_time의 유형은 HH:mm:ss 포맷으로 가져온다.
             DB에서 받아온 Text 값을 float 형으로 교체해주는 루틴이 들어가야된다.
          */
         String start_time = null;
-
+//        start_time = "24:00:00";
 
         return start_time;
     }
 
-    public String scanWifi(String location) {
+    public boolean isLocationAwareness() {
+        /*
+            위치 인식 메서드 추후 구현
+            Wifi 스캔하기 전에 위치 기반부터 검사한다.
+         */
+
+        return false;
+    }
+
+    public boolean scanWifi(String location) {
         /*
             출근 버튼을 누를 경우 수행되는 Wi-Fi 스캔 함수.
             근무자의 출근 위치를 받아서 해당 매장의 Wi-Fi를 스캔할 수 있는지 확인한다.
          */
+
+        if(isLocationAwareness()) return false;
 
         WifiManager wifiManager;
         ConnectivityManager connManager;
@@ -134,7 +147,7 @@ public class MainActivity extends AppCompatActivity
             //현재는 SSID 일치하는 Wifi의 MAC 주소 가지고 온다.
             //앞으로 해당 매장에 출근했을 때 근무자의 매장 MAC 주소를 가지고 와서 해당 MAC 주소가 있는지 체크
             //함수 반환형도 바꿔줄 것.
-            if(result.SSID.equals(location)) MACAddr = result.BSSID;
+//            if(result.SSID.equals(location)) MACAddr = result.BSSID;
         }
         /*
             List View에 보여줄 세팅.
@@ -160,7 +173,8 @@ public class MainActivity extends AppCompatActivity
 //        setListAdapter(adapter);
         */
 
-        return MACAddr;
+//        return MACAddr;
+        return true;
     }
 
 
@@ -178,10 +192,7 @@ public class MainActivity extends AppCompatActivity
 
         clockView = (ClockView) findViewById(R.id.clock_view);
 
-        //DB에서 오늘의 근무 시작 시간을 가지고 온다.
-        clockView.setSTART_ANGLE(getStartTimeFromDB());
         setButtons();
-
 
         timer = new Timer(true);
         timer.schedule(new TimerTask() {
@@ -195,7 +206,7 @@ public class MainActivity extends AppCompatActivity
                     //시계 값 전달
                     Message msg = handler.obtainMessage();
                     msg.what = TIMER_ID;
-                    msg.obj = getFormatDateTime();
+                    msg.obj = clockView.getFormatDateTime();
                     handler.sendMessage(msg);
                 } catch (Exception e) { e.printStackTrace(); }
             }
@@ -213,7 +224,6 @@ public class MainActivity extends AppCompatActivity
         });
         */
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -225,16 +235,44 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setButtons() {
-        //Start Button 세팅
-        Button StartBtn = (Button)  findViewById(R.id.start_btn);
+        StartBtn = (Button) findViewById(R.id.start_btn);
+        StopBtn = (Button) findViewById(R.id.stop_btn);
+        BreakBtn = (ToggleButton) findViewById(R.id.break_btn);
+
         StartBtn.setOnClickListener(onClickListener);
-
-        //Stop Button 세팅
-        Button StopBtn = (Button)  findViewById(R.id.stop_btn);
         StopBtn.setOnClickListener(onClickListener);
+        BreakBtn.setOnClickListener(onToggleListener);
 
-        Button BreakBtn = (Button)  findViewById(R.id.break_btn);
-        BreakBtn.setOnClickListener(onClickListener);
+        /*
+            앱을 사용자가 자주 키고 끄고 할 수 있으므로,
+            현재 근무 상태를 shared preference를 이용해서 앱에 저장하는 것이 나을 듯 하다.
+         */
+
+        if(EMPLOY_STATE == EMPLOY_STATE_LEAVE) {
+            //출근 중이 아닐 때 활성화
+            StopBtn.setEnabled(false);
+            BreakBtn.setEnabled(false);
+        }
+
+        if(EMPLOY_STATE == EMPLOY_STATE_WORK) {
+            //출근 했을 때 활성화 앱을 다시 켰을 때
+            StartBtn.setEnabled(false);
+        }
+    }
+
+    private void stateMessage(int STATE) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        switch(STATE) {
+            case EMPLOY_STATE_WORK:
+                alertBuilder.setTitle("출근 처리가 완료되었습니다.");
+                alertBuilder.setMessage(clockView.getFormatDateTime());
+                break;
+            case EMPLOY_STATE_LEAVE:
+                alertBuilder.setTitle("퇴근 처리가 완료되었습니다.");
+                alertBuilder.setMessage(clockView.getFormatDateTime());
+                break;
+        }
+        alertBuilder.show();
     }
 
     Button.OnClickListener onClickListener = new Button.OnClickListener() {
@@ -246,25 +284,54 @@ public class MainActivity extends AppCompatActivity
                         근무 시작 버튼
                         Wifi 스캔 및 실제 출근시간 기록
                      */
-                    String str = scanWifi(STORE_LOCATION);
-                    wifiScan.setText(str);
-                    EMPLOY_STATE = true;
+                    scanWifi(STORE_LOCATION);
                     clockView.setClockColor("#0000FF");
+                    StopBtn.setEnabled(true);
+                    BreakBtn.setEnabled(true);
+                    StartBtn.setEnabled(false);
+                    EMPLOY_STATE = EMPLOY_STATE_WORK;
                     break;
                 case R.id.stop_btn:
                     /*
                         근무 종료 버튼
                     */
-                    Toast.makeText(MainActivity.this, "Stop", Toast.LENGTH_SHORT).show();
-                    EMPLOY_STATE = false;
+                    StartBtn.setEnabled(true);
+                    StopBtn.setEnabled(false);
+                    BreakBtn.setEnabled(false);
+                    EMPLOY_STATE = EMPLOY_STATE_LEAVE;
                     break;
+
+            }
+            stateMessage(EMPLOY_STATE);
+        }
+    };
+
+    ToggleButton.OnClickListener onToggleListener = new ToggleButton.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
                 case R.id.break_btn:
                     /*
                         휴식 버튼
-                        추후 토글 키로 변경할 예정
                      */
-                    EMPLOY_STATE = false;
-                    clockView.setClockColor("#FF0000");
+                    if( !BreakBtn.isChecked() ) {
+                        /*
+                            휴식 상태가 아닐 경우 휴식 상태로 바꾼다.
+                            쉬는 시간을 DB에 등록
+                         */
+                        clockView.setClockColor("#00FF00");
+                        Toast.makeText(MainActivity.this, "색깔아 바껴라", Toast.LENGTH_SHORT).show();
+                        Log.d("isCheck toggle", "색깔바껴야되는디..");
+                        EMPLOY_STATE = EMPLOY_STATE_BREAK;
+                    } else {
+                        /*
+                            휴식 상태일 경우 휴식 종료로 바꾼다.
+                            쉬는 시간 종료를 DB에 등록
+                         */
+                        Toast.makeText(MainActivity.this, "휴식 끝", Toast.LENGTH_SHORT).show();
+                        Log.d("isCheck toggle", "휴식 종료 들어간다.");
+                        EMPLOY_STATE = EMPLOY_STATE_WORK;
+                    }
                     break;
             }
         }
@@ -272,7 +339,17 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        backPressCloseHandler.onBackPressed();
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if( drawerLayout.isDrawerOpen(GravityCompat.START) ) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            backPressCloseHandler.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
     }
 
     @Override

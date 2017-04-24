@@ -60,11 +60,12 @@
         app:layout_constraintTop_toBottomOf="@+id/clock_base"
         app:layout_constraintRight_toLeftOf="@+id/break_btn" />
 
-    <Button
+    <ToggleButton
         android:id="@+id/break_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="break"
+        android:textOff="break"
+        android:textOn="return"
         app:layout_constraintTop_toBottomOf="@+id/clock_base"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
