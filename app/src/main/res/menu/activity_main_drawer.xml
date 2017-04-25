@@ -3,13 +3,24 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/vacation_request"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Day off" />
+        </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/loginout"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Logout" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Settings" />
+    </group>
+    <!--
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
@@ -32,5 +43,6 @@
                 android:title="Send" />
         </menu>
     </item>
+    -->
 
 </menu>

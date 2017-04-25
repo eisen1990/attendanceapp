@@ -1,24 +1,10 @@
 package com.planetory.io;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -31,19 +17,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,6 +27,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     BackPressCloseHandler backPressCloseHandler;
+    WifiControl wifiControl;
 
     //STORE_LOCATION 값은 추후 직원의 매장 정보를 가지고 오는데 사용될 변수
     private String STORE_LOCATION = "EASW";
@@ -69,7 +46,9 @@ public class MainActivity extends AppCompatActivity
     ClockView clockView;
 
     TextView dateNow;
+    TextView LEAVE_TIME;
     TextView wifiScan;
+
 
     Handler handler = new Handler(new Handler.Callback() {
 
@@ -85,7 +64,6 @@ public class MainActivity extends AppCompatActivity
     });
 
 
-
     public String getStartTimeFromDB() {
         /*
             DB 또는 앱에서 직원의 당일 스케줄 시작시간을 가지고 온다.
@@ -99,90 +77,13 @@ public class MainActivity extends AppCompatActivity
         return start_time;
     }
 
-    public boolean isLocationAwareness() {
-        /*
-            위치 인식 메서드 추후 구현
-            Wifi 스캔하기 전에 위치 기반부터 검사한다.
-         */
-
-        return false;
-    }
-
-    public boolean scanWifi(String location) {
-        /*
-            출근 버튼을 누를 경우 수행되는 Wi-Fi 스캔 함수.
-            근무자의 출근 위치를 받아서 해당 매장의 Wi-Fi를 스캔할 수 있는지 확인한다.
-         */
-
-        if(isLocationAwareness()) return false;
-
-        WifiManager wifiManager;
-        ConnectivityManager connManager;
-        List<ScanResult> scanResult;
-        SimpleAdapter adapter;
-        ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String, String>>();
-
-        String MACAddr = null;
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-//        connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo wifiInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        scanResult = wifiManager.getScanResults();
-        list.clear();
-
-        for(ScanResult result: scanResult) {
-            HashMap<String,String> item = new HashMap<String,String>();
-            item.put("bssid","BSSID : " + result.BSSID);
-            item.put("ssid","SSID : " + result.SSID);
-            item.put("capabilities","Capablities : " + result.capabilities);
-            item.put("freq","Freq : " + result.frequency);
-            item.put("level","Signal Level : " + result.level);
-
-            Log.d("BSSID value",result.BSSID);
-            Log.d("SSID value",result.SSID);
-            Log.i("capabilities value",result.capabilities);
-            Log.i("frequency value",Integer.toString(result.frequency));
-            Log.i("level value", Integer.toString(result.level));
-            list.add(item);
-            //현재는 SSID 일치하는 Wifi의 MAC 주소 가지고 온다.
-            //앞으로 해당 매장에 출근했을 때 근무자의 매장 MAC 주소를 가지고 와서 해당 MAC 주소가 있는지 체크
-            //함수 반환형도 바꿔줄 것.
-//            if(result.SSID.equals(location)) MACAddr = result.BSSID;
-        }
-        /*
-            List View에 보여줄 세팅.
-            사용하지 않음.
-         */
-        /*
-        String[] from = new String[] {
-                "bssid",
-                "ssid",
-                "capabilities",
-                "freq",
-                "level"
-        };
-
-        int[] to = new int[] {
-                R.id.bssid,
-                R.id.ssid,
-                R.id.capabilities,
-                R.id.Freq,
-                R.id.level
-        };
-        adapter = new SimpleAdapter( this, list, R.layout.activity_main, from, to);
-//        setListAdapter(adapter);
-        */
-
-//        return MACAddr;
-        return true;
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         backPressCloseHandler = new BackPressCloseHandler(this);
+        wifiControl = new WifiControl(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -212,17 +113,19 @@ public class MainActivity extends AppCompatActivity
             }
         }, 1000, 1000);
 
-        /*
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, MyWorkHistoryActivity.class);
+                startActivity(intent);
             }
         });
-        */
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -284,7 +187,7 @@ public class MainActivity extends AppCompatActivity
                         근무 시작 버튼
                         Wifi 스캔 및 실제 출근시간 기록
                      */
-                    scanWifi(STORE_LOCATION);
+                    wifiControl.scanWifi(STORE_LOCATION);
                     clockView.setClockColor("#0000FF");
                     StopBtn.setEnabled(true);
                     BreakBtn.setEnabled(true);
@@ -378,20 +281,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        Intent intent;
+
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.vacation_request) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.loginout) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.settings) {
+            intent = new Intent(MainActivity.this, WifiListActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

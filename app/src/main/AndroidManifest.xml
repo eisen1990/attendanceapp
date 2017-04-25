@@ -21,7 +21,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +38,8 @@
         <activity
             android:name=".MyWorkHistoryActivity"
             android:label="@string/title_activity_my_work_history"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".WifiListActivity"></activity>
     </application>
 
 </manifest>
