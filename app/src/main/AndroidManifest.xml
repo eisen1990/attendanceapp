@@ -7,9 +7,13 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <!-- Wi-Fi 정보를 얻기 위해 핸드폰 정보 읽기위한 퍼미션 -->
+    <!-- Wi-Fi 정보를 얻기 위해 핸드폰 정보 읽기 위한 퍼미션 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <!-- 전화번호를 가지고 오기 위해 핸드폰 정보 읽기 위한 퍼미션 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +44,21 @@
             android:label="@string/title_activity_my_work_history"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".WifiListActivity"></activity>
+        <activity
+            android:name=".TestActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".StartActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".InfoPersonalActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".InfoTermsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".GetPhoneNumberActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
