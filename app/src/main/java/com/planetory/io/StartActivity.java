@@ -1,12 +1,10 @@
 package com.planetory.io;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -40,7 +38,7 @@ public class StartActivity extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(StartActivity.this, GetPhoneNumberActivity.class);
+                Intent intent = new Intent(StartActivity.this, RegistrationActivity.class);
                 startActivity(intent);
             }
         });

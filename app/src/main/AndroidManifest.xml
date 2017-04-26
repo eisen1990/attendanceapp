@@ -60,8 +60,12 @@
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".GetPhoneNumberActivity"
+            android:name=".RegistrationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RegistrationPasswordActivity"
+            android:label="@string/title_activity_registration_password"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
