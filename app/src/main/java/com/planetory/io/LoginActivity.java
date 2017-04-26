@@ -10,14 +10,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private BackPressCloseHandler backPressCloseHandler;
+    /*
+        첫 로드 화면 뒤에 로그인 버튼 누르면
+        실행되는 Activity.
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        backPressCloseHandler = new BackPressCloseHandler(this);
+
 
         ImageView imageView = new ImageView(this);
         imageView.setBackgroundResource(R.drawable.ic_menu_camera);
@@ -25,16 +27,11 @@ public class LoginActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, StartActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        backPressCloseHandler.onBackPressed();
-    }
 
 }

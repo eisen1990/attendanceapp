@@ -12,6 +12,10 @@ import java.util.ArrayList;
 
 public class WifiListViewAdapter extends BaseAdapter {
 
+    /*
+        추후 ListView Adapter들 한꺼번에 모아서 모듈로 각 List view 클래스에 배포
+     */
+
     private LayoutInflater inflater;
     private int layout;
     private ArrayList<WifiItem> wifiItems;

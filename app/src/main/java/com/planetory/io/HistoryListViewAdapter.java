@@ -1,13 +1,11 @@
 package com.planetory.io;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 
@@ -44,8 +42,8 @@ public class HistoryListViewAdapter extends BaseAdapter {
             추후 Recycler View 패턴을 구현하여 List 목록이 많을 때 View 재사용 구현 예정
             ViewHolder 클래스를 참조할 것.
          */
-        if(convertView == null) {
-            convertView = inflater.inflate(layout,parent,false);
+        if (convertView == null) {
+            convertView = inflater.inflate(layout, parent, false);
         }
 
         HistoryItem historyItem = listData.get(position);

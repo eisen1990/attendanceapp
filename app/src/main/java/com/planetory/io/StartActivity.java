@@ -14,6 +14,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class StartActivity extends AppCompatActivity {
+    /*
+        Load Activity 다음으로 로그인과 회원가입을 결정하는 Activity
+     */
 
     private static final SpannableString STRING_INFO = new SpannableString("회원가입을 하면 IO의 서비스 약관, 개인정보 취급방침에 동의하는 것으로 간주됩니다.");
     private static final int PARSE_TERMS_START = 13;
@@ -37,8 +40,17 @@ public class StartActivity extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), GetPhoneNumberActivity.class);
+                Intent intent = new Intent(StartActivity.this, GetPhoneNumberActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
