@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(LoginCheck(phone, password)) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
+                    finish();
                 } else {
                     Snackbar.make(view, LoginError, Snackbar.LENGTH_LONG).show();
                 }
