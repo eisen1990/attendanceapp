@@ -8,20 +8,8 @@
     android:background="@color/colorBase"
     tools:context="com.planetory.io.RegistrationActivity">
 
-
-    <TextView
-        android:id="@+id/activity_get_number_txt_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="휴대폰 번호를 입력해 주세요"
-        android:textSize="24sp"
-        android:textColor="#FFF"
-        android:layout_below="@+id/activity_get_number_btn_back"
-        android:layout_alignStart="@+id/activity_get_number_btn_back" />
-
     <ImageButton
-        android:id="@+id/activity_get_number_btn_back"
+        android:id="@+id/activity_registration_back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -31,12 +19,23 @@
         android:background="@null"
         app:srcCompat="@drawable/tmp_click_back_white" />
 
-    <EditText
-        android:id="@+id/activity_get_number"
+    <TextView
+        android:id="@+id/activity_registration_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/activity_get_number_txt_title"
-        android:layout_below="@+id/activity_get_number_txt_title"
+        android:layout_marginTop="24dp"
+        android:text="휴대폰 번호를 입력해 주세요"
+        android:textSize="24sp"
+        android:textColor="#FFF"
+        android:layout_below="@+id/activity_registration_back_btn"
+        android:layout_alignStart="@+id/activity_registration_back_btn" />
+
+    <EditText
+        android:id="@+id/activity_registration_phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/activity_registration_title"
+        android:layout_below="@+id/activity_registration_title"
         android:layout_marginTop="40dp"
         android:drawableStart="@drawable/tmp_icon_phone"
         android:ems="11"
@@ -47,7 +46,7 @@
         android:inputType="phone" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/activity_get_number_fab_next"
+        android:id="@+id/activity_registration_fab_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

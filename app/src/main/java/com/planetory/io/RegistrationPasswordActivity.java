@@ -27,10 +27,10 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
 
         final Intent intent_data = getIntent();
 
-        passwordInputText = (EditText) findViewById(R.id.activity_get_password);
-        passwordInputConfirmText = (EditText) findViewById(R.id.activity_get_password_confirm);
+        passwordInputText = (EditText) findViewById(R.id.activity_registration_password_password);
+        passwordInputConfirmText = (EditText) findViewById(R.id.activity_registration_password_confirm);
 
-        fab = (FloatingActionButton) findViewById(R.id.activity_get_password_fab_next);
+        fab = (FloatingActionButton) findViewById(R.id.activity_registration_password_fab_next);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

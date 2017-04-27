@@ -33,7 +33,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_get_number_btn_back);
+        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_registration_back_btn);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,10 +41,10 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
 
-        phoneNumberText = (EditText) findViewById(R.id.activity_get_number);
+        phoneNumberText = (EditText) findViewById(R.id.activity_registration_phone_number);
 //        phoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
-        fab = (FloatingActionButton) findViewById(R.id.activity_get_number_fab_next);
+        fab = (FloatingActionButton) findViewById(R.id.activity_registration_fab_next);
         /*
         if(hasPhoneUSIM(RegistrationActivity.this)) {
             View v = this.getWindow().getDecorView();
@@ -57,8 +57,11 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String phoneNumberInput = phoneNumberText.getText().toString();
+                String getPhoneNumberInput = getPhoneNumber(RegistrationActivity.this);
+                Log.d("핸드폰 번호 왜이뤱", phoneNumberInput);
+                Log.d("뭐여이거", getPhoneNumberInput);
 
-                if (phoneNumberInput.equals(getPhoneNumber(RegistrationActivity.this))) {
+                if (phoneNumberInput.equals(getPhoneNumberInput)) {
                     /*
                         입력한 핸드폰 번호가 USIM에서 가지고온 번호와 일치하는 Case
                      */
@@ -114,8 +117,8 @@ public class RegistrationActivity extends AppCompatActivity {
             if (telephonyManager.getLine1Number() != null) {
                 phoneNumber = telephonyManager.getLine1Number();
             }
-            phoneNumber = phoneNumber.substring(phoneNumber.length() - 10, phoneNumber.length());
-            phoneNumber = "0" + phoneNumber;
+//            phoneNumber = phoneNumber.substring(phoneNumber.length() - 10, phoneNumber.length());
+//            phoneNumber = "0" + phoneNumber;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,6 +141,7 @@ public class RegistrationActivity extends AppCompatActivity {
         /*
             DB에서 검사해서 등록된 핸드폰 번호라면 true 리턴
          */
+        flag = true;
 
         return flag;
     }

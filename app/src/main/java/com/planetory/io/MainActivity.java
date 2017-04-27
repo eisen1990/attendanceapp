@@ -18,8 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity
     ToggleButton BreakBtn;
     private final int EMPLOY_STATE_WORK = 1;
     private final int EMPLOY_STATE_LEAVE = 2;
-    private final int EMPLOY_STATE_BREAK = 3;
+    private final int EMPLOY_STATE_BREAK_START = 3;
+    private final int EMPLOY_STATE_BREAK_STOP = 4;
     private int EMPLOY_STATE = EMPLOY_STATE_LEAVE;
 
     private Timer timer;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean handleMessage(Message msg) {
-            if(msg.what == TIMER_ID) {
+            if (msg.what == TIMER_ID) {
                 clockView.invalidate();
                 String time = (String) msg.obj;
                 dateNow.setText(time);
@@ -90,7 +91,6 @@ public class MainActivity extends AppCompatActivity
 
         dateNow = (TextView) findViewById(R.id.dateNow);
         wifiScan = (TextView) findViewById(R.id.wifi);
-
         clockView = (ClockView) findViewById(R.id.clock_view);
 
         setButtons();
@@ -109,7 +109,9 @@ public class MainActivity extends AppCompatActivity
                     msg.what = TIMER_ID;
                     msg.obj = clockView.getFormatDateTime();
                     handler.sendMessage(msg);
-                } catch (Exception e) { e.printStackTrace(); }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, 1000, 1000);
 
@@ -151,13 +153,13 @@ public class MainActivity extends AppCompatActivity
             현재 근무 상태를 shared preference를 이용해서 앱에 저장하는 것이 나을 듯 하다.
          */
 
-        if(EMPLOY_STATE == EMPLOY_STATE_LEAVE) {
+        if (EMPLOY_STATE == EMPLOY_STATE_LEAVE) {
             //출근 중이 아닐 때 활성화
             StopBtn.setEnabled(false);
             BreakBtn.setEnabled(false);
         }
 
-        if(EMPLOY_STATE == EMPLOY_STATE_WORK) {
+        if (EMPLOY_STATE == EMPLOY_STATE_WORK) {
             //출근 했을 때 활성화 앱을 다시 켰을 때
             StartBtn.setEnabled(false);
         }
@@ -165,7 +167,7 @@ public class MainActivity extends AppCompatActivity
 
     private void stateMessage(int STATE) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        switch(STATE) {
+        switch (STATE) {
             case EMPLOY_STATE_WORK:
                 alertBuilder.setTitle("출근 처리가 완료되었습니다.");
                 alertBuilder.setMessage(clockView.getFormatDateTime());
@@ -188,11 +190,11 @@ public class MainActivity extends AppCompatActivity
                         Wifi 스캔 및 실제 출근시간 기록
                      */
                     wifiControl.scanWifi(STORE_LOCATION);
-                    clockView.setClockColor("#0000FF");
                     StopBtn.setEnabled(true);
                     BreakBtn.setEnabled(true);
                     StartBtn.setEnabled(false);
                     EMPLOY_STATE = EMPLOY_STATE_WORK;
+                    clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
                     break;
                 case R.id.stop_btn:
                     /*
@@ -202,6 +204,7 @@ public class MainActivity extends AppCompatActivity
                     StopBtn.setEnabled(false);
                     BreakBtn.setEnabled(false);
                     EMPLOY_STATE = EMPLOY_STATE_LEAVE;
+                    clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
                     break;
 
             }
@@ -217,23 +220,24 @@ public class MainActivity extends AppCompatActivity
                     /*
                         휴식 버튼
                      */
-                    if( !BreakBtn.isChecked() ) {
+                    if (!BreakBtn.isChecked()) {
                         /*
                             휴식 상태가 아닐 경우 휴식 상태로 바꾼다.
                             쉬는 시간을 DB에 등록
                          */
-                        clockView.setClockColor("#00FF00");
-                        Toast.makeText(MainActivity.this, "색깔아 바껴라", Toast.LENGTH_SHORT).show();
+//                        clockView.
+//                        Toast.makeText(MainActivity.this, "색깔아 바껴라", Toast.LENGTH_SHORT).show();
                         Log.d("isCheck toggle", "색깔바껴야되는디..");
-                        EMPLOY_STATE = EMPLOY_STATE_BREAK;
+                        EMPLOY_STATE = EMPLOY_STATE_BREAK_START;
+                        clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
                     } else {
                         /*
                             휴식 상태일 경우 휴식 종료로 바꾼다.
                             쉬는 시간 종료를 DB에 등록
                          */
-                        Toast.makeText(MainActivity.this, "휴식 끝", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(MainActivity.this, "휴식 끝", Toast.LENGTH_SHORT).show();
                         Log.d("isCheck toggle", "휴식 종료 들어간다.");
-                        EMPLOY_STATE = EMPLOY_STATE_WORK;
+                        EMPLOY_STATE = EMPLOY_STATE_BREAK_STOP;
                     }
                     break;
             }
@@ -243,7 +247,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if( drawerLayout.isDrawerOpen(GravityCompat.START) ) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             backPressCloseHandler.onBackPressed();

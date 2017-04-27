@@ -1,14 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBase"
     tools:context="com.planetory.io.LoginActivity">
 
-    <ImageView
-        android:layout_width="368dp"
-        android:layout_height="495dp" />
+    <ImageButton
+        android:id="@+id/activity_login_back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        app:srcCompat="@drawable/tmp_click_back_white" />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/activity_login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="휴대폰 번호를 입력해 주세요"
+        android:textSize="24sp"
+        android:textColor="#FFF"
+        android:layout_below="@+id/activity_login_back_btn"
+        android:layout_alignStart="@+id/activity_login_back_btn" />
+
+    <EditText
+        android:id="@+id/activity_login_phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/activity_login_title"
+        android:layout_below="@+id/activity_login_title"
+        android:layout_marginTop="40dp"
+        android:drawableStart="@drawable/tmp_icon_phone"
+        android:ems="11"
+        android:hint="Your Phone Number"
+        android:textColorHint="#FFF"
+        android:textColor="#FFF"
+        android:textSize="20sp"
+        android:inputType="phone" />
+
+    <EditText
+        android:id="@+id/activity_login_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/activity_login_phone_number"
+        android:layout_below="@+id/activity_login_phone_number"
+        android:layout_marginTop="10dp"
+        android:drawableStart="@drawable/tmp_icon_phone"
+        android:ems="20"
+        android:hint="비밀번호"
+        android:textColorHint="#FFF"
+        android:textColor="#FFF"
+        android:textSize="20sp"
+        android:inputType="textPassword" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/activity_login_fab_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@android:drawable/ic_menu_send"/>
+
+</RelativeLayout>
