@@ -67,7 +67,7 @@ public class ClockView extends View {
             if(start_temp > 0) {
                 paint.setColor(Color.parseColor("#5D5D5D"));
                 canvas.drawArc(rect, START_ANGLE, start_temp, false, paint);
-                paint.setColor(Color.parseColor("#0054FF"));
+                paint.setColor(Color.parseColor("#1254FF"));
                 canvas.drawArc(rect, start_temp, CURRENT_ANGLE-start_temp, false, paint);
             } else {
                 canvas.drawArc(rect, START_ANGLE, CURRENT_ANGLE, false, paint);
