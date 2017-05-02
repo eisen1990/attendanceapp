@@ -23,6 +23,9 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 public class TestActivity extends AppCompatActivity {
 
 
+    /*
+        branch test
+     */
     WifiManager mWifiManager;
 
     private final BroadcastReceiver mWifiScanReceiver = new BroadcastReceiver() {
