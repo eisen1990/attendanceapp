@@ -7,6 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -36,7 +38,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 /*
                     핸드폰 번호 불일치, Snackbar 띄우기
                  */
-                Toast.makeText(RegistrationActivity.this, getPhoneNumber(RegistrationActivity.this), Toast.LENGTH_SHORT).show();
                 Snackbar.make(view, PhoneNumberInputError, Snackbar.LENGTH_LONG).show();
             } else if (!isAlreadyRegToCompany(phoneNumberInput)) {
                 /*
@@ -81,6 +82,7 @@ public class RegistrationActivity extends AppCompatActivity {
         PhoneNumberInputError = getString(R.string.activity_registration_wrong_number);
         NoUSIMState = getString(R.string.activity_registration_no_usim);
 
+        //View 설정
         ImageButton btn_back = (ImageButton) findViewById(R.id.activity_registration_back_btn);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,9 +90,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        phoneNumberText = (EditText) findViewById(R.id.activity_registration_phone_number);
-//        phoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         fabNext = (FloatingActionButton) findViewById(R.id.activity_registration_fab_next);
         /*
@@ -101,6 +100,24 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         */
         fabNext.setOnClickListener(fabListener);
+        fabNext.setEnabled(false);
+
+        phoneNumberText = (EditText) findViewById(R.id.activity_registration_phone_number);
+        phoneNumberText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() >= 8){
+                    fabNext.setEnabled(true);
+                } else{
+                    fabNext.setEnabled(false);
+                }
+            }
+        });
+//        phoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
     }
 
 

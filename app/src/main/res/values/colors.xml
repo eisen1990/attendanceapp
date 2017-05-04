@@ -4,5 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorBase">#5AAEFF</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="IO_basic">#5EAFDC</color>
+
+    <color name="IO_basic">#3299FE</color>
+    <color name="white">#FFFFFF</color>
 </resources>

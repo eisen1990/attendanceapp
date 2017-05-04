@@ -30,6 +30,10 @@
     <string name="activity_load_update_dialog_positive">업데이트 받기</string>
     <string name="activity_load_update_dialog_negative">나중에 받기</string>
 
+    <string name="activity_start_signup">회원가입</string>
+    <string name="activity_start_login">로그인</string>
+    <string name="activity_start_info">회원가입을 하면 IO의 서비스 약관, 개인정보 취급방침에 동의하는 것으로 간주됩니다.</string>
+
     <string name="activity_registration_already_registered">이미 회원 가입된 번호입니다. 로그인을 해보세요.</string>
     <string name="activity_registration_to_login">이동</string>
     <string name="activity_registration_unregistered_number">io 사용 사업장에 등록되지 않은 번호입니다. 사업장 관리자에게 등록을 요청해 보세요</string>

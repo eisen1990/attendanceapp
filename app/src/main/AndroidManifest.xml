@@ -60,9 +60,10 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
+        <activit
             android:name=".RegistrationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <!-- android:windowSoftInputMode="adjustResize"-->
         <activity
             android:name=".RegistrationPasswordActivity"
             android:label="@string/title_activity_registration_password"

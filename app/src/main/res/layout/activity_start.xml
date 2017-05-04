@@ -6,33 +6,37 @@
     android:background="@color/IO_basic">
 
     <ImageView
-        android:id="@+id/activity_start_logo_tmp"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:id="@+id/activity_start_logo"
+        android:layout_width="101dp"
+        android:layout_height="69dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        app:srcCompat="@drawable/tmp_start_logo" />
+        android:layout_marginTop="120dp"
+        app:srcCompat="@drawable/logo_start" />
 
-    <ImageButton
-        android:id="@+id/activity_start_btn_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/activity_start_logo_tmp"
+    <Button
+        android:id="@+id/activity_start_btn_signup"
+        android:layout_width="360dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/activity_start_logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:background="@null"
-        app:srcCompat="@drawable/tmp_btn_login" />
+        android:layout_marginTop="50dp"
+        android:text="@string/activity_start_signup"
+        android:textColor="@color/IO_basic"
+        android:textSize="25sp"
+        android:background="@drawable/btn_signup" />
 
-    <ImageButton
-        android:id="@+id/activity_start_btn_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/activity_start_btn_login"
+    <Button
+        android:id="@+id/activity_start_btn_login"
+        android:layout_width="360dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/activity_start_btn_signup"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
-        android:background="@null"
-        app:srcCompat="@drawable/tmp_btn_register" />
+        android:text="@string/activity_start_login"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:background="@drawable/btn_login" />
 
     <TextView
         android:id="@+id/activity_start_txt_info"
@@ -43,7 +47,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
-        android:text="Some Long Text"
+        android:text="@string/activity_start_info"
         android:textSize="20sp"
         android:textColor="#FFF"/>
 
