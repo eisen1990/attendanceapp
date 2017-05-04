@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Io.iml" filepath="$PROJECT_DIR$/Io.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/attendanceapp_merged.iml" filepath="$PROJECT_DIR$/attendanceapp_merged.iml" />
+      <module fileurl="file://$PROJECT_DIR$/attendanceapp.iml" filepath="$PROJECT_DIR$/attendanceapp.iml" />
     </modules>
   </component>
 </project>
