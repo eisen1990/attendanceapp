@@ -30,4 +30,9 @@
     <string name="activity_load_update_dialog_positive">업데이트 받기</string>
     <string name="activity_load_update_dialog_negative">나중에 받기</string>
 
+    <string name="activity_registration_already_registered">이미 회원 가입된 번호입니다. 로그인을 해보세요.</string>
+    <string name="activity_registration_to_login">이동</string>
+    <string name="activity_registration_unregistered_number">io 사용 사업장에 등록되지 않은 번호입니다. 사업장 관리자에게 등록을 요청해 보세요</string>
+    <string name="activity_registration_wrong_number">현재 사용하고 계신 단말에서 실제 사용 중인 번호를 입력해 주세요</string>
+    <string name="activity_registration_no_usim">USIM이 없는 경우</string>
 </resources>
