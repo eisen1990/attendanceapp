@@ -10,7 +10,7 @@
     <string name="title_activity_my_work_history">근무기록 조회</string>
     <string name="title_activity_registration_password">RegistrationPasswordActivity</string>
 
-    <!-- Strings related to login -->
+    <!-- 자동 생성된 로그인 액티비티에 의해 추가된 문자열. 필요없음? -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
