@@ -42,7 +42,7 @@
         app:srcCompat="@drawable/ic_login_phone" />
 
     <EditText
-        android:id="@+id/activity_registration_phone_number"
+        android:id="@+id/activity_registration_txt_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/activity_registration_title"

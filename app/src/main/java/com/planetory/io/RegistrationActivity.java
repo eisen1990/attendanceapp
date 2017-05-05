@@ -96,7 +96,7 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         FabNext = (ImageButton) findViewById(R.id.activity_registration_btn_next);
-        TxtPhoneNumber = (EditText) findViewById(R.id.activity_registration_phone_number);
+        TxtPhoneNumber = (EditText) findViewById(R.id.activity_registration_txt_phone);
 
         fabSetting();
         txtSetting();

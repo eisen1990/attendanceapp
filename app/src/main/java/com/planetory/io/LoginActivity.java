@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 public class LoginActivity extends AppCompatActivity {
     /*
@@ -14,41 +15,78 @@ public class LoginActivity extends AppCompatActivity {
         실행되는 Activity.
      */
 
-    private final String LoginError = "로그인에 실패하였습니다.";
+    private String UnregisteredNumber;
+    private String WrongPassword;
 
     EditText TxtphoneNumber;
     EditText Txtpassword;
+    ImageButton FabNext;
 
-    FloatingActionButton fab;
+    View.OnClickListener fabListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            String phone = TxtphoneNumber.getText().toString();
+            String password = Txtpassword.getText().toString();
+
+            if(!isPhoneValid(phone)) {
+                Snackbar.make(view, UnregisteredNumber, Snackbar.LENGTH_LONG).show();
+            } else if(isLoginValid(phone, password)) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            } else{
+                Snackbar.make(view, WrongPassword, Snackbar.LENGTH_LONG).show();
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        TxtphoneNumber = (EditText) findViewById(R.id.activity_login_phone_number);
-        Txtpassword = (EditText) findViewById(R.id.activity_login_password);
+        UnregisteredNumber = getString(R.string.activity_login_unregistered_number);
+        WrongPassword = getString(R.string.activity_login_wrong_password);
 
-        fab = (FloatingActionButton) findViewById(R.id.activity_login_fab_next);
-
-        fab.setOnClickListener(new View.OnClickListener() {
+        //View 설정
+        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_login_btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String phone = TxtphoneNumber.getText().toString();
-                String password = Txtpassword.getText().toString();
-
-                if(LoginCheck(phone, password)) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                } else {
-                    Snackbar.make(view, LoginError, Snackbar.LENGTH_LONG).show();
-                }
-
+                finish();
             }
         });
+
+        FabNext = (ImageButton) findViewById(R.id.activity_login_btn_next);
+        TxtphoneNumber = (EditText) findViewById(R.id.activity_login_txt_phone);
+        Txtpassword = (EditText) findViewById(R.id.activity_login_password);
+
+        fabSetting();
+        txtSetting();
     }
 
-    public boolean LoginCheck(String phone, String password) {
+    private void fabSetting(){
+        FabNext.setOnClickListener(fabListener);
+        FabNext.setEnabled(false);
+    }
+
+    private void txtSetting(){
+
+    }
+
+
+    public boolean isPhoneValid(String phone){
+        boolean flag = true;
+
+        /*
+            한 루틴에서 세 결과를 내보낼지 두 루틴으로 분리할지 선택.
+            가능할 경우 true, 잘못될 경우 false;
+         */
+
+        return flag;
+    }
+
+    public boolean isLoginValid(String phone, String password) {
         boolean flag = true;
 
         /*
