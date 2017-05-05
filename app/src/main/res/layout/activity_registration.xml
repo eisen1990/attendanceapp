@@ -5,54 +5,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBase"
+    android:background="@color/IO_basic"
     tools:context="com.planetory.io.RegistrationActivity">
 
     <ImageButton
-        android:id="@+id/activity_registration_back_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/activity_registration_btn_back"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:background="@null"
-        app:srcCompat="@drawable/tmp_click_back_white" />
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/btn_back" />
 
     <TextView
         android:id="@+id/activity_registration_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="휴대폰 번호를 입력해 주세요"
+        android:text="@string/activity_registration_title"
         android:textSize="24sp"
         android:textColor="#FFF"
-        android:layout_below="@+id/activity_registration_back_btn"
-        android:layout_alignStart="@+id/activity_registration_back_btn" />
+        android:layout_below="@+id/activity_registration_btn_back"
+        android:layout_alignStart="@+id/activity_registration_btn_back" />
+
+    <ImageView
+        android:id="@+id/activity_registration_img_phone"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignStart="@+id/activity_registration_title"
+        android:layout_below="@+id/activity_registration_title"
+        android:layout_marginTop="150dp"
+        app:srcCompat="@drawable/ic_login_phone" />
 
     <EditText
         android:id="@+id/activity_registration_phone_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/activity_registration_title"
         android:layout_below="@+id/activity_registration_title"
-        android:layout_marginTop="40dp"
-        android:drawableStart="@drawable/tmp_icon_phone"
-        android:ems="11"
-        android:hint="Your Phone Number"
+        android:layout_toEndOf="@+id/activity_registration_img_phone"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="135dp"
+        android:ems="12"
+        android:hint="@string/activity_registration_text_hint"
         android:textColorHint="#FFF"
         android:textColor="#FFF"
         android:textSize="20sp"
-        android:inputType="phone" />
+        android:inputType="phone"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/activity_registration_fab_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:id="@+id/activity_registration_btn_next"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        app:backgroundTint="@color/login_fab_selector"
-        android:src="@android:drawable/ic_menu_send"/>
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/btn_next_white"/>
+
 </RelativeLayout>

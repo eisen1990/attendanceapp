@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 추후 처리 -->
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorBase">#5AAEFF</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorBase">#5AAEFF</color>
 
     <color name="IO_basic">#3299FE</color>
     <color name="white">#FFFFFF</color>

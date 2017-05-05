@@ -3,14 +3,10 @@ package com.planetory.io;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
     /*
@@ -20,8 +16,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private final String LoginError = "로그인에 실패하였습니다.";
 
-    EditText phoneNumberText;
-    EditText passwordText;
+    EditText TxtphoneNumber;
+    EditText Txtpassword;
 
     FloatingActionButton fab;
 
@@ -30,16 +26,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        phoneNumberText = (EditText) findViewById(R.id.activity_login_phone_number);
-        passwordText = (EditText) findViewById(R.id.activity_login_password);
+        TxtphoneNumber = (EditText) findViewById(R.id.activity_login_phone_number);
+        Txtpassword = (EditText) findViewById(R.id.activity_login_password);
 
         fab = (FloatingActionButton) findViewById(R.id.activity_login_fab_next);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String phone = phoneNumberText.getText().toString();
-                String password = passwordText.getText().toString();
+                String phone = TxtphoneNumber.getText().toString();
+                String password = Txtpassword.getText().toString();
 
                 if(LoginCheck(phone, password)) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);

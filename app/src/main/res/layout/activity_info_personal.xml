@@ -7,25 +7,53 @@
     android:layout_height="match_parent"
     tools:context="com.planetory.io.InfoPersonalActivity">
 
-    <ImageButton
-        android:id="@+id/activity_info_personal_btn_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:background="@null"
-        app:srcCompat="@drawable/tmp_click_back_black" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/IO_basic"
+        android:id="@+id/activity_info_personal_layout_back">
 
-    <TextView
-        android:id="@+id/activity_info_personal_txt_title"
-        android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/activity_info_personal_btn_back"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="14dp"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/btn_back" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/activity_info_personal_btn_back"
-        android:layout_below="@+id/activity_info_personal_btn_back"
-        android:layout_marginTop="32dp"
-        android:text="개인정보 취급 방침"
-        android:textSize="20sp"
-        android:textColor="#000" />
+        android:layout_below="@id/activity_info_personal_layout_back"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/activity_info_personal_txt_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/activity_info_personal_title"
+                android:textSize="20sp"
+                android:textColor="#000" />
+
+            <TextView
+                android:id="@+id/activity_info_persoal_txt_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n테스트"
+                android:textSize="20sp"
+                android:textColor="#000" />
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
