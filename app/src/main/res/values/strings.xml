@@ -60,6 +60,16 @@
     <string name="activity_login_unregistered_number">가입되지 않은 휴대폰 번호입니다.</string>
     <string name="activity_login_wrong_password">비밀번호가 일치하지 않습니다</string>
 
-    <string name="activity_reset_pwd_phone_title">비밀번호를 재설정 하시겠어요?</string>
     <string name="activity_reset_pwd_phone_small_title">계정을 찾으려면 휴대폰 번호를 입력하세요</string>
+    <string name="activity_reset_pwd_phone_unregistered_number">가입되지 않은 휴대폰 번호입니다</string>
+    <string name="activity_reset_pwd_phone_wrong_number">현재 사용하고 계신 단말에서 실제 사용 중인 번호를 입력해 주세요</string>
+    <string name="activity_reset_pwd_phone_no_usim">USIM이 없는 경우</string> <!-- 일단 임시 -->
+
+    <string name="activity_reset_pwds_title">비밀번호를 재설정 하시겠어요?</string>
+    <string name="activity_reset_password_small_title">새로운 비밀번호를 입력하세요</string>
+    <string name="activity_reset_password_pwd_hint">비밀번호(6~20)</string>
+    <string name="activity_reset_password_confirm_hint">비밀번호 한 번 더 입력</string>
+    <string name="activity_reset_password_wrong_confirm">입력한 비밀번호가 서로 다릅니다</string>
+    <string name="activity_reset_password_reset_complete">비밀번호가 재설정되었습니다</string>
+    <string name="activity_reset_password_reset_fail">비밀번호 재설정에 실패하였습니다. 다시 시도해 주세요.</string>
 </resources>

@@ -68,8 +68,10 @@
             android:name=".RegistrationPasswordActivity"
             android:label="@string/title_activity_registration_password"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ResetPasswordPhoneActivity"
+        <activity
+            android:name=".ResetPasswordPhoneActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ResetPasswordActivity"></activity>
     </application>
 
 </manifest>
