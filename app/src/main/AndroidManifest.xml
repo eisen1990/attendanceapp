@@ -60,16 +60,15 @@
         <activity
             android:name=".RegistrationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <!-- android:windowSoftInputMode="adjustResize" -->
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activit
-            android:name=".RegistrationActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <!-- android:windowSoftInputMode="adjustResize"-->
         <activity
             android:name=".RegistrationPasswordActivity"
             android:label="@string/title_activity_registration_password"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ResetPasswordPhoneActivity"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
