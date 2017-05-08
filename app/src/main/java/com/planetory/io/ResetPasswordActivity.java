@@ -40,8 +40,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     Toast.makeText(ResetPasswordActivity.this, ResetComplete, Toast.LENGTH_SHORT).show();
                     Log.d("Riemann", tempPhoneNumber);
                     Log.d("Riemann", passwordInput);
-                    Intent intent = new Intent(ResetPasswordActivity.this, MainActivity.class);
-                    startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(ResetPasswordActivity.this, ResetFail, Toast.LENGTH_SHORT).show();
