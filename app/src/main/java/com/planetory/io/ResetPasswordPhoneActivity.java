@@ -13,13 +13,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-public class RegistrationActivity extends AppCompatActivity {
+public class ResetPasswordPhoneActivity extends AppCompatActivity {
 
     static final String PHONE_NUMBER = "phone_number";
 
-    private String AlreadyRegistrationMember;
-    private String AlreadyRegistrationMemberMove;
-    private String RegistrationFromCompanyNotYet;
+    private String UnregisteredNumber;
     private String PhoneNumberInputError;
     private String NoUSIMState;
 
@@ -30,9 +28,8 @@ public class RegistrationActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             String phoneNumberInput = TxtPhoneNumber.getText().toString();
-            String getPhoneNumberInput = getPhoneNumber(RegistrationActivity.this);
-            Log.d("핸드폰 번호 왜이뤱", phoneNumberInput);
-            Log.d("뭐여이거", getPhoneNumberInput);
+            String getPhoneNumberInput = getPhoneNumber(ResetPasswordPhoneActivity.this);
+            Log.d("Riemann", getPhoneNumberInput);
 
             if (!phoneNumberInput.equals(getPhoneNumberInput)) {
                 /*
@@ -40,33 +37,18 @@ public class RegistrationActivity extends AppCompatActivity {
                  */
                 TxtPhoneNumber.setError(PhoneNumberInputError);
                 Snackbar.make(view, PhoneNumberInputError, Snackbar.LENGTH_LONG).show();
-            } else if (!isAlreadyRegToCompany(phoneNumberInput)) {
+            } else if (!isRegistered(phoneNumberInput)) {
                 /*
-                    핸드폰 번호가 회사에 등록되지 않은 계정
-                    사업체에 사업장 관리자에게 등록 요청하는 Snackbar
+                    회원가입되어 있지 않은 번호.
                  */
-                TxtPhoneNumber.setError(RegistrationFromCompanyNotYet);
-                Snackbar.make(view, RegistrationFromCompanyNotYet, Snackbar.LENGTH_LONG).show();
-            } else if (isAlreadyReg(phoneNumberInput)) {
-                /*
-                    이미 회원가입된 번호.
-                    로그인 화면으로 이동시켜주는 Snackbar action
-                 */
-                TxtPhoneNumber.setError(AlreadyRegistrationMember);
-                Snackbar.make(view, AlreadyRegistrationMember, Snackbar.LENGTH_LONG).setAction(AlreadyRegistrationMemberMove, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                    }
-                }).show();
+                TxtPhoneNumber.setError(UnregisteredNumber);
+                Snackbar.make(view, UnregisteredNumber, Snackbar.LENGTH_LONG).show();
             } else {
                 /*
-                    비밀번호 설정 Activity로 넘어가는 Case
+                    비밀번호 재설정 Activity로 넘어가는 Case
                     intent로 현재 Activity에서 구한 Phone Number도 같이 넘겨준다.
-                    이를 통해 다음 Activity에서 등록을 완료함.
                  */
-                Intent intent = new Intent(RegistrationActivity.this, RegistrationPasswordActivity.class);
+                Intent intent = new Intent(ResetPasswordPhoneActivity.this, ResetPasswordActivity.class);
                 intent.putExtra(PHONE_NUMBER, phoneNumberInput);
                 startActivity(intent);
                 finish();
@@ -78,16 +60,14 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration);
+        setContentView(R.layout.activity_reset_password_phone);
 
-        AlreadyRegistrationMember = getString(R.string.activity_registration_already_registered);
-        AlreadyRegistrationMemberMove = getString(R.string.activity_registration_to_login);
-        RegistrationFromCompanyNotYet = getString(R.string.activity_registration_unregistered_number);
-        PhoneNumberInputError = getString(R.string.activity_registration_wrong_number);
-        NoUSIMState = getString(R.string.activity_registration_no_usim);
+        UnregisteredNumber = getString(R.string.activity_reset_pwd_phone_unregistered_number);
+        PhoneNumberInputError = getString(R.string.activity_reset_pwd_phone_wrong_number);
+        NoUSIMState = getString(R.string.activity_reset_pwd_phone_no_usim);
 
         //View 설정
-        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_registration_btn_back);
+        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_reset_pwd_phone_btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,8 +75,8 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
 
-        FabNext = (ImageButton) findViewById(R.id.activity_registration_btn_next);
-        TxtPhoneNumber = (EditText) findViewById(R.id.activity_registration_txt_phone);
+        FabNext = (ImageButton) findViewById(R.id.activity_reset_pwd_phone_btn_next);
+        TxtPhoneNumber = (EditText) findViewById(R.id.activity_reset_pwd_phone_txt_phone);
 
         fabSetting();
         txtSetting();
@@ -104,7 +84,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void fabSetting(){
         /*
-        if(hasPhoneUSIM(RegistrationActivity.this)) {
+        if(hasPhoneUSIM(ResetPasswordPhoneActivity.this)) {
             View v = this.getWindow().getDecorView();
             Snackbar.make(v, NoUSIMState, Snackbar.LENGTH_LONG).show();
             FabNext.setEnabled(false);
@@ -160,26 +140,14 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
 
-    public boolean isAlreadyReg(String phoneNumber) {
+    public boolean isRegistered(String phoneNumber) {
         boolean flag = false;
 
         /*
             DB에서 검사해서 등록된 핸드폰 번호라면 true 리턴
          */
-        //flag = true;
-
-        return flag;
-    }
-
-    public boolean isAlreadyRegToCompany(String phoneNumber) {
-        boolean flag = false;
-
-        /*
-            DB에서 검사해서 회사의 전화번호 리스트에 등록이 되었는지 확인.
-         */
         flag = true;
 
         return flag;
     }
-
 }

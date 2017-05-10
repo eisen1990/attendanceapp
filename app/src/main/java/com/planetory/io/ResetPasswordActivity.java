@@ -1,10 +1,9 @@
 package com.planetory.io;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -13,11 +12,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class RegistrationPasswordActivity extends AppCompatActivity {
+public class ResetPasswordActivity extends AppCompatActivity {
 
     private String PasswordError;
-    private String RegistrationComplete;
-    private String RegistrationFail;
+    private String ResetComplete;
+    private String ResetFail;
 
     EditText TxtpasswordInput;
     EditText TxtpasswordInputConfirm;
@@ -28,7 +27,7 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
         public void onClick(View view) {
             String passwordInput = TxtpasswordInput.getText().toString();
             String passwordInputConfirm = TxtpasswordInputConfirm.getText().toString();
-            String tempPhoneNumber = getIntent().getExtras().getString(RegistrationActivity.PHONE_NUMBER);
+            String tempPhoneNumber = getIntent().getExtras().getString(ResetPasswordPhoneActivity.PHONE_NUMBER);
 
             if (passwordInput.equals(passwordInputConfirm)) {
                 /*
@@ -37,15 +36,13 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
                     회원 정보를 DB에 저장하는 루틴 필요함
                  */
 
-                if( RegistrationOnServer( tempPhoneNumber, passwordInput) ) {
-                    Toast.makeText(RegistrationPasswordActivity.this, RegistrationComplete, Toast.LENGTH_SHORT).show();
+                if( ResetOnServer( tempPhoneNumber, passwordInput) ) {
+                    Toast.makeText(ResetPasswordActivity.this, ResetComplete, Toast.LENGTH_SHORT).show();
                     Log.d("Riemann", tempPhoneNumber);
                     Log.d("Riemann", passwordInput);
-                    Intent intent = new Intent(RegistrationPasswordActivity.this, MainActivity.class);
-                    startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(RegistrationPasswordActivity.this, RegistrationFail, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ResetPasswordActivity.this, ResetFail, Toast.LENGTH_SHORT).show();
                 }
 
             } else {
@@ -58,30 +55,31 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration_password);
+        setContentView(R.layout.activity_reset_password);
 
-        PasswordError = getString(R.string.activity_registration_password_wrong_confirm);
-        RegistrationComplete = getString(R.string.activity_registration_password_reg_complete);
-        RegistrationFail = getString(R.string.activity_registration_password_reg_fail);
+        PasswordError = getString(R.string.activity_reset_password_wrong_confirm);
+        ResetComplete = getString(R.string.activity_reset_password_reset_complete);
+        ResetFail = getString(R.string.activity_reset_password_reset_fail);
 
         //View 설정
-        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_registration_password_btn_back);
+        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_reset_password_btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RegistrationPasswordActivity.this, RegistrationActivity.class);
+                Intent intent = new Intent(ResetPasswordActivity.this, ResetPasswordPhoneActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
 
-        FabNext = (ImageButton) findViewById(R.id.activity_registration_password_btn_next);
-        TxtpasswordInput = (EditText) findViewById(R.id.activity_registration_password_txt_pwd);
-        TxtpasswordInputConfirm = (EditText) findViewById(R.id.activity_registration_password_txt_confirm);
+        FabNext = (ImageButton) findViewById(R.id.activity_reset_password_btn_next);
+        TxtpasswordInput = (EditText) findViewById(R.id.activity_reset_password_txt_pwd);
+        TxtpasswordInputConfirm = (EditText) findViewById(R.id.activity_reset_password_txt_confirm);
 
         fabSetting();
         txtSetting();
     }
+
 
     private void fabSetting(){
         FabNext.setOnClickListener(fabListener);
@@ -121,7 +119,7 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
     }
 
 
-    public boolean RegistrationOnServer(String phoneNumber, String password) {
+    public boolean ResetOnServer(String phoneNumber, String password) {
         boolean flag = false;
         /*
             값이 성공적으로 바뀌면 return true, 아닐 경우 false
@@ -131,5 +129,4 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
 
         return flag;
     }
-
 }

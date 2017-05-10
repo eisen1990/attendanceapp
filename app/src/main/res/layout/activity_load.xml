@@ -7,10 +7,10 @@
     android:background="@color/IO_basic">
 
     <ImageView
-        android:id="@+id/activity_load_logo_tmp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/activity_load_logo"
+        android:layout_width="240dp"
+        android:layout_height="164dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        app:srcCompat="@drawable/tmp_start_logo" />
+        app:srcCompat="@drawable/logo_start" />
 </RelativeLayout>
