@@ -8,7 +8,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class StartActivity extends AppCompatActivity {
@@ -16,41 +16,26 @@ public class StartActivity extends AppCompatActivity {
         Load Activity 다음으로 로그인과 회원가입을 결정하는 Activity
      */
 
-    private static final SpannableString STRING_INFO = new SpannableString("회원가입을 하면 IO의 서비스 약관, 개인정보 취급방침에 동의하는 것으로 간주됩니다.");
-    private static final int PARSE_TERMS_START = 13;
-    private static final int PARSE_TERMS_END = 19;
-    private static final int PARSE_PERSONAL_START = 21;
-    private static final int PARSE_PERSONAL_END = 30;
+    private SpannableString STRING_INFO;
+    private int PARSE_TERMS_START;
+    private int PARSE_TERMS_END;
+    private int PARSE_PERSONAL_START;
+    private int PARSE_PERSONAL_END;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        STRING_INFO = new SpannableString(getString(R.string.activity_start_info));
+        PARSE_TERMS_START = getResources().getInteger(R.integer.PARSE_TERMS_START);
+        PARSE_TERMS_END = getResources().getInteger(R.integer.PARSE_TERMS_END);
+        PARSE_PERSONAL_START = getResources().getInteger(R.integer.PARSE_PERSONAL_START);
+        PARSE_PERSONAL_END = getResources().getInteger(R.integer.PARSE_PERSONAL_END);
+
         setInfoText();
         setButtons();
-    }
-
-    private void setButtons(){
-        ImageButton btn_login = (ImageButton) findViewById(R.id.activity_start_btn_login);
-        ImageButton btn_register = (ImageButton) findViewById(R.id.activity_start_btn_register);
-
-        btn_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(StartActivity.this, RegistrationActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(StartActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
     }
 
     private void setInfoText(){
@@ -77,5 +62,26 @@ public class StartActivity extends AppCompatActivity {
 
         txt_info.setText(STRING_INFO);
         txt_info.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void setButtons(){
+        Button btn_login = (Button) findViewById(R.id.activity_start_btn_login);
+        Button btn_register = (Button) findViewById(R.id.activity_start_btn_signup);
+
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StartActivity.this, RegistrationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StartActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

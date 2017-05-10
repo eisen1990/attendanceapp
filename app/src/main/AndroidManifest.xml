@@ -3,6 +3,7 @@
     package="com.planetory.io">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <!-- 로그인 액티비티를 자동 생성할 때 추가된 퍼미션. 필요없음? -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -57,15 +58,20 @@
             android:name=".InfoTermsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".RegistrationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- android:windowSoftInputMode="adjustResize" -->
+        <activity
+            android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RegistrationPasswordActivity"
             android:label="@string/title_activity_registration_password"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ResetPasswordPhoneActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ResetPasswordActivity"></activity>
     </application>
 
 </manifest>

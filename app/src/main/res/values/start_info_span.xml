@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="PARSE_TERMS_START">13</integer>
+    <integer name="PARSE_TERMS_END">19</integer>
+    <integer name="PARSE_PERSONAL_START">21</integer>
+    <integer name="PARSE_PERSONAL_END">30</integer>
+</resources>
