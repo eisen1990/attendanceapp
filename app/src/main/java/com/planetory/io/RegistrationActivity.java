@@ -63,7 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 if (phoneNumberInput.equals(getPhoneNumberInput)) {
                     /*
-                        입력한 핸드폰 번호가 USIM에서 가지고온 번호와 일치하는 Case
+                        입력한 핸드폰 번호가 USIM에서 가지고온 번호와 일치하는 Case.
                      */
                     if(isAlreadyRegToCompany(phoneNumberInput)) {
                         /*
