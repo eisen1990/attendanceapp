@@ -13,7 +13,7 @@
         android:id="@+id/activity_main_layout_leave"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/activity_main_leave_txt_date"
@@ -44,7 +44,7 @@
             android:layout_marginEnd="6dp"
             android:layout_marginTop="10dp"
             android:layout_toStartOf="@+id/activity_main_leave_txt_time"
-            android:text="@string/activity_main_leave_am"
+            android:text="@string/activity_main_am"
             android:textColor="#000"
             android:textSize="16sp" />
 
@@ -59,6 +59,33 @@
             android:text="@string/activity_main_leave_punch_in"
             android:textColor="@color/IO_basic"
             android:textSize="40sp" />
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/activity_main_layout_work"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/activity_main_work_txt_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="65dp"
+            android:text="4월 21일 (금) 오후 7:00"
+            android:textColor="#000"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/activity_main_work_tmp"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:layout_below="@+id/activity_main_work_txt_clock"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            app:srcCompat="@drawable/btn_main_punch_in_notext" />
 
     </RelativeLayout>
 </FrameLayout>

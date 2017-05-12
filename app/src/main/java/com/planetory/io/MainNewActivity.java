@@ -11,6 +11,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -21,32 +24,46 @@ public class MainNewActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final int LEAVE_TIMER_ID = 0;
+    private final int WORK_TIMER_ID = 1;
 
     String TIME_AM;
     String TIME_PM;
 
+    RelativeLayout layoutLeave;
+    RelativeLayout layoutWork;
     TextView txtLeaveTime;
     TextView txtLeaveDate;
     TextView txtLeaveMeridiem;
+    TextView txtWorkClock;
+    Button btnPunchin;
 
     Timer leaveTimer;
+    Timer workTimer;
 
     Handler handler = new Handler(new Handler.Callback() {
 
         @Override
         public boolean handleMessage(Message msg) {
+            Calendar calendar = Calendar.getInstance();
+
+            String sMeridiem = calendar.get(Calendar.HOUR_OF_DAY) >= 12 ? TIME_PM : TIME_AM;
+            CharSequence cDate = calendar.get(Calendar.MONTH) >= 10 ? DateFormat.format("MM월 dd일", calendar) :
+                    DateFormat.format("M월 dd일", calendar);
+            String sWeekday = "(" + toDayofWeek(calendar.get(Calendar.DAY_OF_WEEK)) + ')';
+            String sDate = cDate.toString() + ' ' + sWeekday;
+
             if (msg.what == LEAVE_TIMER_ID) {
-                Calendar calendar = Calendar.getInstance();
+                CharSequence cTime = DateFormat.format("hh:mm:ss", calendar);
 
-                String sTime = DateFormat.format("hh:mm:ss", calendar).toString();
-                String sMeridiem = calendar.get(Calendar.HOUR_OF_DAY) >= 12 ? TIME_PM : TIME_AM;
-                CharSequence cDate = calendar.get(Calendar.MONTH) >= 10 ? DateFormat.format("MM월 dd일", calendar) :
-                        DateFormat.format("M월 dd일", calendar);
-                String sDate = cDate.toString() + " (" + toDayofWeek(calendar.get(Calendar.DAY_OF_WEEK)) + ')';
-
-                txtLeaveTime.setText(sTime);
+                txtLeaveTime.setText(cTime);
                 txtLeaveMeridiem.setText(sMeridiem);
                 txtLeaveDate.setText(sDate);
+            } else if (msg.what == WORK_TIMER_ID) {
+                CharSequence cTime = calendar.get(Calendar.HOUR) >= 10 ? DateFormat.format("hh:mm", calendar) :
+                        DateFormat.format("h:mm", calendar);
+                String sClock = sDate + ' ' + sMeridiem + ' ' + cTime.toString();
+
+                txtWorkClock.setText(sClock);
             }
             return true;
         }
@@ -88,15 +105,21 @@ public class MainNewActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_new);
 
-        TIME_AM = getString(R.string.activity_main_leave_am);
-        TIME_PM = getString(R.string.activity_main_leave_pm);
+        TIME_AM = getString(R.string.activity_main_am);
+        TIME_PM = getString(R.string.activity_main_pm);
 
+        layoutLeave = (RelativeLayout) findViewById(R.id.activity_main_layout_leave);
+        layoutWork = (RelativeLayout) findViewById(R.id.activity_main_layout_work);
         txtLeaveDate = (TextView) findViewById(R.id.activity_main_leave_txt_date);
         txtLeaveTime = (TextView) findViewById(R.id.activity_main_leave_txt_time);
         txtLeaveMeridiem = (TextView) findViewById(R.id.activity_main_leave_txt_meridiem);
+        txtWorkClock = (TextView) findViewById(R.id.activity_main_work_txt_clock);
+        btnPunchin = (Button) findViewById(R.id.activity_main_leave_btn_punch_in);
 
         basicSetting();
-        timerSetting();
+
+        buttonSetting();
+        leaveSetting();
     }
 
     private void basicSetting(){
@@ -114,8 +137,11 @@ public class MainNewActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void timerSetting(){
+    private void leaveSetting(){
         leaveTimer = new Timer(true);
+        layoutWork.setVisibility(View.GONE);
+        layoutLeave.setVisibility(View.VISIBLE);
+
         leaveTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -126,6 +152,33 @@ public class MainNewActivity extends AppCompatActivity
                 }
             }
         }, 0, 1000);
+    }
+
+    private void workSetting(){
+        workTimer = new Timer(true);
+        layoutLeave.setVisibility(View.GONE);
+        layoutWork.setVisibility(View.VISIBLE);
+
+        workTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    handler.sendEmptyMessage(WORK_TIMER_ID);
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void buttonSetting(){
+        btnPunchin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                leaveTimer.cancel();
+                workSetting();
+            }
+        });
     }
 
 
