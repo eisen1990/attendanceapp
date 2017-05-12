@@ -39,7 +39,8 @@ public class LoginActivity extends AppCompatActivity {
                 Txtpassword.setError(WrongPassword);
                 Snackbar.make(view, WrongPassword, Snackbar.LENGTH_LONG).show();
             } else{
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                //일단 MainNew로 옮기기
+                Intent intent = new Intent(LoginActivity.this, MainNewActivity.class);
                 startActivity(intent);
                 finish();
             }
