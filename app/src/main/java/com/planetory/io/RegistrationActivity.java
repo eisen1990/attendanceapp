@@ -226,12 +226,14 @@ public class RegistrationActivity extends AppCompatActivity {
                 httpURLConnection.setConnectTimeout(10000);
                 httpURLConnection.setReadTimeout(10000);
                 httpURLConnection.setRequestMethod("GET");
+
                 int resCode = httpURLConnection.getResponseCode();
-                if (resCode == httpURLConnection.HTTP_OK) {
+                if (resCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                    String line = null;
+                    String line;
                     while ((line = bufferedReader.readLine()) != null) {
-                        output.append(line + "\n");
+                        output.append(line);
+                        output.append('\n');
                     }
                 }
                 return output.toString();
