@@ -39,8 +39,6 @@ public class RegistrationActivity extends AppCompatActivity {
         public void onClick(View view) {
             String phoneNumberInput = TxtPhoneNumber.getText().toString();
             String getPhoneNumberInput = getPhoneNumber(RegistrationActivity.this);
-            Log.d("핸드폰 번호 왜이뤱", phoneNumberInput);
-            Log.d("뭐여이거", getPhoneNumberInput);
 
             if (!phoneNumberInput.equals(getPhoneNumberInput)) {
                 /*
@@ -162,6 +160,8 @@ public class RegistrationActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             urlTask = null;
             Log.d("eisen",s);
+            s = s.substring(0,s.length()-1);
+            Log.d("eisen after",s);
             if (s.equals("checkUser")) {
                 /*
                     비밀번호 설정 Activity로 넘어가는 Case
@@ -196,7 +196,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 Snackbar.make(getCurrentFocus(), RegistrationFromCompanyNotYet, Snackbar.LENGTH_LONG).show();
 
             } else {
-                Log.d("eisen", "error");
+                Log.d("eisen", "condition error");
             }
         }
 
@@ -211,6 +211,7 @@ public class RegistrationActivity extends AppCompatActivity {
             String urlString;
 //            if (params[0].equals("checkDuplicated")) {
                 urlString = RestURL.CHECK_URL + "phone=" + check_phone;
+//            urlString = "http://203.255.92.139:8080/io/app/text";
 //            } else {
 //                urlString = RestURL.CHECK_URL + "phone=" + check_phone + "&company=" + check_company;
 //            }
@@ -225,7 +226,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 httpURLConnection.setConnectTimeout(10000);
                 httpURLConnection.setReadTimeout(10000);
                 httpURLConnection.setRequestMethod("GET");
-
                 int resCode = httpURLConnection.getResponseCode();
                 if (resCode == httpURLConnection.HTTP_OK) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -240,7 +240,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 Log.d("Registration Fail", "URL exception");
             }
 
-            return "error";
+            return "URLerror";
         }
     }
 

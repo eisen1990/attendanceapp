@@ -16,6 +16,9 @@
     <!-- 전화번호를 가지고 오기 위해 핸드폰 정보 읽기 위한 퍼미션 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <!-- 인터넷 퍼미션 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
