@@ -57,6 +57,7 @@
     <string name="activity_login_phone_hint">휴대폰 번호</string>
     <string name="activity_login_password_hint">비밀번호</string>
     <string name="activity_login_reset_password">비밀번호 재설정 ></string>
+
     <string name="activity_login_unregistered_number">가입되지 않은 휴대폰 번호입니다.</string>
     <string name="activity_login_wrong_password">비밀번호가 일치하지 않습니다</string>
 

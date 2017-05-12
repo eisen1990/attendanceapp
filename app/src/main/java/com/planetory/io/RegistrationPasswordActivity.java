@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutionException;
 
 public class RegistrationPasswordActivity extends AppCompatActivity {
 
+    private URLTask urlTask = null;
+
     private String PasswordError;
     private String RegistrationComplete;
     private String RegistrationFail;
@@ -43,17 +45,8 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
                     메인 페이지로 이동한다. 근무자 그룹에 따라 UI 분기 일단 MainActivity
                     회원 정보를 DB에 저장하는 루틴 필요함
                  */
-
-                if (RegistrationOnServer(tempPhoneNumber, passwordInput)) {
-                    Toast.makeText(RegistrationPasswordActivity.this, RegistrationComplete, Toast.LENGTH_SHORT).show();
-                    Log.d("Riemann", tempPhoneNumber);
-                    Log.d("Riemann", passwordInput);
-                    Intent intent = new Intent(RegistrationPasswordActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(RegistrationPasswordActivity.this, RegistrationFail, Toast.LENGTH_SHORT).show();
-                }
+                urlTask = new URLTask(tempPhoneNumber, passwordInput);
+                urlTask.execute();
 
             } else {
                 Snackbar.make(view, PasswordError, Snackbar.LENGTH_LONG).show();
@@ -135,42 +128,49 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
         });
     }
 
+    private class URLTask extends AsyncTask<Void, Void, String> {
 
-    public boolean RegistrationOnServer(String phoneNumber, String password) {
-        boolean flag = false;
-        /*
-            값이 성공적으로 바뀌면 return true, 아닐 경우 false
-            성공했다 치고
-         */
-        String result = null;
-        try {
-            result = new URLTask().execute(phoneNumber, password).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        private String reg_phone;
+        private String reg_password;
+
+        URLTask(String reg_phone, String reg_password) {
+            this.reg_phone = reg_phone;
+            this.reg_password = reg_password;
         }
-        if (result.equals("addUser")) flag = true;
-
-        return flag;
-    }
-
-    private class URLTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+            urlTask = null;
+            Log.d("eisen", s);
+            s = s.substring(0, s.length() - 1);
+
+            if (s.equals("addUser")) {
+                Toast.makeText(RegistrationPasswordActivity.this, RegistrationComplete, Toast.LENGTH_SHORT).show();
+                Log.d("Riemann", reg_phone);
+                Log.d("Riemann", reg_password);
+                Intent intent = new Intent(RegistrationPasswordActivity.this, MainActivity.class);
+                /*
+                    회원가입 성공 시 로그인 계정 정보를 같이 넘겨서 자동으로 로그인되게 만들어야됨.
+                 */
+                intent.putExtra("user_phone", reg_phone);
+                intent.putExtra("user_password", reg_password);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(RegistrationPasswordActivity.this, RegistrationFail, Toast.LENGTH_SHORT).show();
+            }
+
         }
 
         @Override
         protected void onCancelled() {
-            super.onCancelled();
+            urlTask = null;
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(Void... params) {
 
-            String urlString = RestURL.ADDUSER_URL + "phone=" + params[0] + "&password=" + params[1];
+            String urlString = RestURL.ADDUSER_URL + "phone=" + reg_phone + "&password=" + reg_password;
 
             StringBuilder output = new StringBuilder();
 

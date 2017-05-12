@@ -1,21 +1,30 @@
 package com.planetory.io;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class LoginActivity extends AppCompatActivity {
     /*
         첫 로드 화면 뒤에 로그인 버튼 누르면
         실행되는 Activity.
      */
+    private URLTask urlTask = null;
 
     private String UnregisteredNumber;
     private String WrongPassword;
@@ -30,19 +39,8 @@ public class LoginActivity extends AppCompatActivity {
             String phone = TxtphoneNumber.getText().toString();
             String password = Txtpassword.getText().toString();
 
-            if(!isPhoneValid(phone)) {
-                //DB에 없는 휴대폰 번호
-                TxtphoneNumber.setError(UnregisteredNumber);
-                Snackbar.make(view, UnregisteredNumber, Snackbar.LENGTH_LONG).show();
-            } else if(!isLoginValid(phone, password)) {
-                //휴대폰 번호는 있으나 비밀번호가 잘못된 경우
-                Txtpassword.setError(WrongPassword);
-                Snackbar.make(view, WrongPassword, Snackbar.LENGTH_LONG).show();
-            } else{
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+            urlTask = new URLTask(phone, password);
+            urlTask.execute();
         }
     };
 
@@ -81,22 +79,26 @@ public class LoginActivity extends AppCompatActivity {
         txtSetting();
     }
 
-    private void fabSetting(){
+    private void fabSetting() {
         FabNext.setOnClickListener(fabListener);
         FabNext.setEnabled(false);
     }
 
-    private void txtSetting(){
+    private void txtSetting() {
         TxtphoneNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() >= 8 && Txtpassword.getText().length() >= 1){
+                if (editable.length() >= 8 && Txtpassword.getText().length() >= 1) {
                     FabNext.setEnabled(true);
-                } else{
+                } else {
                     FabNext.setEnabled(false);
                 }
             }
@@ -104,39 +106,95 @@ public class LoginActivity extends AppCompatActivity {
 
         Txtpassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() >= 1 && TxtphoneNumber.getText().length() >= 8){
+                if (editable.length() >= 1 && TxtphoneNumber.getText().length() >= 8) {
                     FabNext.setEnabled(true);
-                } else{
+                } else {
                     FabNext.setEnabled(false);
                 }
             }
         });
     }
 
+    private class URLTask extends AsyncTask<Void, Void, String> {
 
-    public boolean isPhoneValid(String phone){
-        boolean flag = true;
+        private String login_phone;
+        private String login_password;
 
-        /*
-            한 루틴에서 세 결과를 내보낼지 두 루틴으로 분리할지 선택.
-         */
+        public URLTask(String login_phone, String login_password) {
+            this.login_phone = login_phone;
+            this.login_password = login_password;
+        }
 
-        return flag;
+        @Override
+        protected void onPostExecute(String s) {
+            urlTask = null;
+            Log.d("eisen", s);
+            s = s.substring(0, s.length() - 1);
+            if (s.equals("loginUser")) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                /*
+                    로그인 정보를 Main activity에 전달해야된다.
+                 */
+                intent.putExtra("user_phone", login_phone);
+                intent.putExtra("user_password", login_password);
+                startActivity(intent);
+                finish();
+            } else if (s.equals("loginUserPasswordFail")) {
+                Log.d("eisen", "Password fail");
+                Txtpassword.setError(WrongPassword);
+                Toast.makeText(LoginActivity.this, WrongPassword, Toast.LENGTH_SHORT).show();
+            } else if (s.equals("loginUserUnregistered")) {
+                Log.d("eisen", "Unregistered user");
+                TxtphoneNumber.setError(UnregisteredNumber);
+                Toast.makeText(LoginActivity.this, UnregisteredNumber, Toast.LENGTH_SHORT).show();
+            } else {
+                Log.d("eisen", "post error");
+                Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            urlTask = null;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String urlString = RestURL.LOGINUSER_URL + "phone=" + login_phone + "&password=" + login_password;
+
+            StringBuilder output = new StringBuilder();
+
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setConnectTimeout(10000);
+                httpURLConnection.setReadTimeout(10000);
+                httpURLConnection.setRequestMethod("GET");
+
+                int resCode = httpURLConnection.getResponseCode();
+                if (resCode == httpURLConnection.HTTP_OK) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                    String line = null;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        output.append(line + "\n");
+                    }
+                }
+
+                return output.toString();
+
+            } catch (Exception e) {
+                Log.d("Login Fail", "URL exception");
+            }
+            return null;
+        }
     }
-
-    public boolean isLoginValid(String phone, String password) {
-        boolean flag = true;
-
-        /*
-            Login 루틴 나중에 Case 별로 분리
-         */
-
-        return flag;
-    }
-
 }
