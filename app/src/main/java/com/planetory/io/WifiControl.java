@@ -9,6 +9,10 @@ import android.util.Log;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +68,39 @@ public class WifiControl {
         return true;
     }
 
-    public ArrayList<WifiItem> scanWifi() {
+    public JSONObject scanWifi() {
+        WifiManager wifiManager;
+        ConnectivityManager connManager;
+        List<ScanResult> scanResult;
+        SimpleAdapter adapter;
+
+        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+
+        scanResult = wifiManager.getScanResults();
+//        wifiItems.clear();
+
+        JSONObject obj = new JSONObject();
+        try {
+            JSONArray jsonArray = new JSONArray();
+            for (ScanResult result : scanResult) {
+                JSONObject sObj = new JSONObject();
+                sObj.put("BSSID", result.BSSID);
+                sObj.put("SSID", result.SSID);
+//                sObj.put("Capabilities", result.capabilities);
+//                sObj.put("Freq", result.frequency);
+//                sObj.put("Level", result.level);
+                jsonArray.put(sObj);
+            }
+            obj.put("wifiaplist", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("eisen", obj.toString());
+
+        return obj;
+    }
+
+    public ArrayList<WifiItem> scanWifi(boolean b) {
         ArrayList<WifiItem> wifiItems = new ArrayList<>();
 
         WifiManager wifiManager;
@@ -76,12 +112,10 @@ public class WifiControl {
 
         scanResult = wifiManager.getScanResults();
         wifiItems.clear();
-
         for (ScanResult result : scanResult) {
             WifiItem item = new WifiItem(result.BSSID, result.SSID, result.capabilities, String.valueOf(result.frequency), String.valueOf(result.level));
             wifiItems.add(item);
         }
-
         return wifiItems;
     }
 

@@ -1,6 +1,7 @@
 package com.planetory.io;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +21,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,6 +35,9 @@ public class MainActivity extends AppCompatActivity
 
     BackPressCloseHandler backPressCloseHandler;
     WifiControl wifiControl;
+    private URLTask urlTask = null;
+
+    private String user_phone;
 
     //STORE_LOCATION 값은 추후 직원의 매장 정보를 가지고 오는데 사용될 변수
     private String STORE_LOCATION = "EASW";
@@ -82,6 +92,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        user_phone =  getIntent().getExtras().getString("user_phone");
         setContentView(R.layout.activity_main);
         backPressCloseHandler = new BackPressCloseHandler(this);
         wifiControl = new WifiControl(this);
@@ -189,7 +200,13 @@ public class MainActivity extends AppCompatActivity
                         근무 시작 버튼
                         Wifi 스캔 및 실제 출근시간 기록
                      */
-                    wifiControl.scanWifi(STORE_LOCATION);
+//                    wifiControl.scanWifi(STORE_LOCATION);
+                    JSONObject jsonObject = wifiControl.scanWifi();
+
+                    // 이전 Activity들로 부터 넘어온 user_phone과, 현재 시간, json->String으로 변환한 와이파이 목록 전달
+                    urlTask = new URLTask(user_phone,clockView.getFormatDateTime(),jsonObject.toString());
+                    urlTask.execute();
+
                     StopBtn.setEnabled(true);
                     BreakBtn.setEnabled(true);
                     StartBtn.setEnabled(false);
@@ -307,5 +324,70 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         timer.cancel();
         super.onDestroy();
+    }
+
+    private class URLTask extends AsyncTask<Void, Void, String> {
+
+        private String phone;
+        private String time;
+        private String wifiaplist;
+
+        public URLTask() {
+        }
+
+        public URLTask(String phone, String time, String wifiaplist) {
+            this.phone = phone;
+            this.time = time;
+            this.wifiaplist = wifiaplist;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            urlTask = null;
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            urlTask = null;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String urlString;
+            //20170512 수정 중
+//            if (params[0].equals("checkDuplicated")) {
+            urlString = RestURL.CHECK_URL + "phone=" + phone + "&time=" + time + "&wifiaplist=" + wifiaplist;
+//            urlString = "http://203.255.92.139:8080/io/app/text";
+//            } else {
+//                urlString = RestURL.CHECK_URL + "phone=" + check_phone + "&company=" + check_company;
+//            }
+
+            Log.d("eisen", urlString);
+
+            StringBuilder output = new StringBuilder();
+
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setConnectTimeout(10000);
+                httpURLConnection.setReadTimeout(10000);
+                httpURLConnection.setRequestMethod("GET");
+                int resCode = httpURLConnection.getResponseCode();
+                if (resCode == httpURLConnection.HTTP_OK) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                    String line = null;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        output.append(line + "\n");
+                    }
+                }
+                return output.toString();
+
+            } catch (Exception e) {
+                Log.d("Registration Fail", "URL exception");
+            }
+
+            return "URLerror";
+        }
     }
 }

@@ -5,4 +5,7 @@ public class RestURL {
     static public final String CHECK_URL = SERVER_URL + "checkUser/";
     static public final String ADDUSER_URL = SERVER_URL + "addUser/";
     static public final String LOGINUSER_URL = SERVER_URL + "loginUser/";
+    static public final String CHECKINTOWORK_URL = SERVER_URL + "checkintowork/";
+    static public final String CHECKOUTOFWORK_URL = SERVER_URL + "checkoutofwork/";
+
 }

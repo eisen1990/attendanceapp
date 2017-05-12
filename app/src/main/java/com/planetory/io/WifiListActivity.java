@@ -21,7 +21,7 @@ public class WifiListActivity extends AppCompatActivity {
         wifiListView = (ListView) findViewById(R.id.wifi_list);
 
         wifiControl = new WifiControl(this);
-        ArrayList<WifiItem> wifiItems = wifiControl.scanWifi();
+        ArrayList<WifiItem> wifiItems = wifiControl.scanWifi(true);
 //        for (WifiItem wifiItem : wifiItems) Log.d("리스트 " + String.valueOf(wifiItems.indexOf(wifiItem)) + " : ", wifiItem.getBSSID());
 
 
