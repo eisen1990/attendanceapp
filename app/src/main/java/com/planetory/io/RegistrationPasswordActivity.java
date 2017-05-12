@@ -1,6 +1,7 @@
 package com.planetory.io;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class RegistrationPasswordActivity extends AppCompatActivity {
 
@@ -37,7 +44,7 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
                     회원 정보를 DB에 저장하는 루틴 필요함
                  */
 
-                if( RegistrationOnServer( tempPhoneNumber, passwordInput) ) {
+                if (RegistrationOnServer(tempPhoneNumber, passwordInput)) {
                     Toast.makeText(RegistrationPasswordActivity.this, RegistrationComplete, Toast.LENGTH_SHORT).show();
                     Log.d("Riemann", tempPhoneNumber);
                     Log.d("Riemann", passwordInput);
@@ -83,22 +90,26 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
         txtSetting();
     }
 
-    private void fabSetting(){
+    private void fabSetting() {
         FabNext.setOnClickListener(fabListener);
         FabNext.setEnabled(false);
     }
 
-    private void txtSetting(){
+    private void txtSetting() {
         TxtpasswordInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() >= 6 && TxtpasswordInputConfirm.getText().length() >= 6){
+                if (editable.length() >= 6 && TxtpasswordInputConfirm.getText().length() >= 6) {
                     FabNext.setEnabled(true);
-                } else{
+                } else {
                     FabNext.setEnabled(false);
                 }
             }
@@ -106,14 +117,18 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
 
         TxtpasswordInputConfirm.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() >= 6 && TxtpasswordInput.getText().length() >= 6){
+                if (editable.length() >= 6 && TxtpasswordInput.getText().length() >= 6) {
                     FabNext.setEnabled(true);
-                } else{
+                } else {
                     FabNext.setEnabled(false);
                 }
             }
@@ -127,9 +142,61 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
             값이 성공적으로 바뀌면 return true, 아닐 경우 false
             성공했다 치고
          */
-        flag = true;
+        String result = null;
+        try {
+            result = new URLTask().execute(phoneNumber, password).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        if (result.equals("addUser")) flag = true;
 
         return flag;
     }
 
+    private class URLTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String urlString = RestURL.ADDUSER_URL + "phone=" + params[0] + "&password=" + params[1];
+
+            StringBuilder output = new StringBuilder();
+
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setConnectTimeout(10000);
+                httpURLConnection.setReadTimeout(10000);
+                httpURLConnection.setRequestMethod("GET");
+
+                int resCode = httpURLConnection.getResponseCode();
+                if (resCode == httpURLConnection.HTTP_OK) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                    String line = null;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        output.append(line + "\n");
+                    }
+                }
+
+                return output.toString();
+
+            } catch (Exception e) {
+                Log.d("Registration Fail", "URL exception");
+            }
+
+            return null;
+        }
+    }
 }
