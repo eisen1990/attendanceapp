@@ -75,4 +75,12 @@
     <string name="activity_main_am">오전</string>
     <string name="activity_main_pm">오후</string>
     <string name="activity_main_leave_punch_in">출근</string>
+    <string name="activity_main_work_pause">자리비움</string>
+    <string name="activity_main_work_return">복귀</string>
+    <string name="activity_main_work_punch_out">퇴근</string>
+
+    <string name="dialog_main_am">am</string>
+    <string name="dialog_main_pm">pm</string>
+    <string name="dialog_main_ok">확인</string>
+    <string name="dialog_main_work_complete">출근 처리가 완료되었습니다!</string>
 </resources>

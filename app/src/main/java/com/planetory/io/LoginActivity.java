@@ -137,6 +137,14 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
+            /*테스트용*/
+            Intent tIntent = new Intent(LoginActivity.this, MainNewActivity.class);
+            startActivity(tIntent);
+            finish();
+            if (s == null) return;
+            /**/
+
+            //TODO:s가 null일 경우 오류 발생. 수정 필요함.
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
             if (s.equals("loginUser")) {
