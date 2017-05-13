@@ -16,6 +16,8 @@ public class StartActivity extends AppCompatActivity {
         Load Activity 다음으로 로그인과 회원가입을 결정하는 Activity
      */
 
+    private BackPressCloseHandler backPressCloseHandler;
+
     private SpannableString STRING_INFO;
     private int PARSE_TERMS_START;
     private int PARSE_TERMS_END;
@@ -26,6 +28,7 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        backPressCloseHandler = new BackPressCloseHandler(this);
         setContentView(R.layout.activity_start);
 
         STRING_INFO = new SpannableString(getString(R.string.activity_start_info));
@@ -83,5 +86,10 @@ public class StartActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        backPressCloseHandler.onBackPressed();
     }
 }

@@ -19,33 +19,6 @@
         app:layout_constraintTop_toTopOf="parent" />
     -->
 
-
-    <TextView
-        android:id="@+id/dateNow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/leaveTime" />
-
-    <TextView
-        android:id="@+id/leaveTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
-
-    <TextView
-        android:id="@+id/wifi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="wifi result"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/clock_base"
         android:layout_width="wrap_content"
@@ -53,7 +26,7 @@
         app:srcCompat="@drawable/clock_base"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wifi"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
     <com.planetory.io.ClockView
         android:id="@+id/clock_view"
@@ -61,7 +34,7 @@
         android:layout_height="@dimen/view_clock_height_pixel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
     <Button
         android:id="@+id/start_btn"

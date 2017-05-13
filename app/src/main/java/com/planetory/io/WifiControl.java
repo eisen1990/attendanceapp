@@ -26,7 +26,7 @@ public class WifiControl {
         this.context = context;
     }
 
-    public boolean scanWifi(String location) {
+    public String scanWifi(String location) {
         /*
             출근 버튼을 누를 경우 수행되는 Wi-Fi 스캔 함수.
             근무자의 출근 위치를 받아서 해당 매장의 Wi-Fi를 스캔할 수 있는지 확인한다.
@@ -38,7 +38,7 @@ public class WifiControl {
         SimpleAdapter adapter;
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 
-        if (isLocationAwareness()) return false;
+        if (isLocationAwareness()) return "wifiaperror";
 
 
         String MACAddr = null;
@@ -49,6 +49,7 @@ public class WifiControl {
         scanResult = wifiManager.getScanResults();
         list.clear();
 
+        /*
         for (ScanResult result : scanResult) {
             HashMap<String, String> item = new HashMap<String, String>();
             item.put("bssid", "BSSID : " + result.BSSID);
@@ -62,10 +63,11 @@ public class WifiControl {
             //앞으로 해당 매장에 출근했을 때 근무자의 매장 MAC 주소를 가지고 와서 해당 MAC 주소가 있는지 체크
             //함수 반환형도 바꿔줄 것.
             if (result.SSID.equals(location)) MACAddr = result.BSSID;
-            ((TextView) ((Activity) context).findViewById(R.id.wifi)).setText(MACAddr);
+//            ((TextView) ((Activity) context).findViewById(R.id.wifi)).setText(MACAddr);
         }
-
-        return true;
+        */
+        MACAddr = scanResult.get(0).BSSID;
+        return MACAddr;
     }
 
     public JSONObject scanWifi() {

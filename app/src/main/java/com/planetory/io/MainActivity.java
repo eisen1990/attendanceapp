@@ -27,6 +27,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,10 +57,15 @@ public class MainActivity extends AppCompatActivity
     private Timer timer;
 
     ClockView clockView;
-
-    TextView dateNow;
     TextView LEAVE_TIME;
-    TextView wifiScan;
+
+
+    private String getCurrentTime() {
+        long time = System.currentTimeMillis();
+        SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String t = day.format(new Date(time));
+        return t;
+    }
 
 
     Handler handler = new Handler(new Handler.Callback() {
@@ -68,7 +75,6 @@ public class MainActivity extends AppCompatActivity
             if (msg.what == TIMER_ID) {
                 clockView.invalidate();
                 String time = (String) msg.obj;
-                dateNow.setText(time);
             }
             return true;
         }
@@ -92,7 +98,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user_phone =  getIntent().getExtras().getString("user_phone");
+        user_phone = getIntent().getExtras().getString("user_phone");
+        urlTask = new URLTask(user_phone);
+        urlTask.execute("workon");
         setContentView(R.layout.activity_main);
         backPressCloseHandler = new BackPressCloseHandler(this);
         wifiControl = new WifiControl(this);
@@ -100,8 +108,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        dateNow = (TextView) findViewById(R.id.dateNow);
-        wifiScan = (TextView) findViewById(R.id.wifi);
         clockView = (ClockView) findViewById(R.id.clock_view);
 
         setButtons();
@@ -204,28 +210,19 @@ public class MainActivity extends AppCompatActivity
                     JSONObject jsonObject = wifiControl.scanWifi();
 
                     // 이전 Activity들로 부터 넘어온 user_phone과, 현재 시간, json->String으로 변환한 와이파이 목록 전달
-                    urlTask = new URLTask(user_phone,clockView.getFormatDateTime(),jsonObject.toString());
-                    urlTask.execute();
+                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask.execute("in");
 
-                    StopBtn.setEnabled(true);
-                    BreakBtn.setEnabled(true);
-                    StartBtn.setEnabled(false);
-                    EMPLOY_STATE = EMPLOY_STATE_WORK;
-                    clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
                     break;
                 case R.id.stop_btn:
                     /*
                         근무 종료 버튼
                     */
-                    StartBtn.setEnabled(true);
-                    StopBtn.setEnabled(false);
-                    BreakBtn.setEnabled(false);
-                    EMPLOY_STATE = EMPLOY_STATE_LEAVE;
-                    clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
-                    break;
+                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask.execute("out");
 
+                    break;
             }
-            stateMessage(EMPLOY_STATE);
         }
     };
 
@@ -276,12 +273,14 @@ public class MainActivity extends AppCompatActivity
         super.onPostResume();
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -297,6 +296,8 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+    */
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -326,13 +327,16 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    private class URLTask extends AsyncTask<Void, Void, String> {
+    private class URLTask extends AsyncTask<String, Void, String> {
 
         private String phone;
         private String time;
         private String wifiaplist;
 
-        public URLTask() {
+        public URLTask(String phone) {
+            this.phone = phone;
+            this.time = null;
+            this.wifiaplist = null;
         }
 
         public URLTask(String phone, String time, String wifiaplist) {
@@ -344,6 +348,32 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
+            Log.d("eisen", s);
+            s = s.substring(0, s.length() - 1);
+
+            if (s.equals("INOK")) {
+                StopBtn.setEnabled(true);
+                BreakBtn.setEnabled(true);
+                StartBtn.setEnabled(false);
+                stateMessage(EMPLOY_STATE_WORK);
+//                clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
+            } else if (s.equals("OUTOK")) {
+                StartBtn.setEnabled(true);
+                StopBtn.setEnabled(false);
+                BreakBtn.setEnabled(false);
+                stateMessage(EMPLOY_STATE_LEAVE);
+//                clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
+            } else if (s.equals("WORKON")) {
+                StopBtn.setEnabled(true);
+                BreakBtn.setEnabled(true);
+                StartBtn.setEnabled(false);
+            } else if (s.equals("WORKNOTYET")){
+                StartBtn.setEnabled(true);
+                StopBtn.setEnabled(false);
+                BreakBtn.setEnabled(false);
+            } else {
+
+            }
 
         }
 
@@ -353,15 +383,20 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(String... params) {
             String urlString;
-            //20170512 수정 중
-//            if (params[0].equals("checkDuplicated")) {
-            urlString = RestURL.CHECK_URL + "phone=" + phone + "&time=" + time + "&wifiaplist=" + wifiaplist;
-//            urlString = "http://203.255.92.139:8080/io/app/text";
-//            } else {
-//                urlString = RestURL.CHECK_URL + "phone=" + check_phone + "&company=" + check_company;
-//            }
+            if (phone.equals("") || (phone == null)) return "phonenull";
+
+            if (params[0].equals("in")) {
+                urlString = RestURL.CHECKINTOWORK_URL + "phone=" + phone + "&time=" + time + "&wifiaplist=" + wifiaplist;
+            } else if (params[0].equals("out")) {
+                urlString = RestURL.CHECKOUTOFWORK_URL + "phone=" + phone + "&time=" + time + "&wifiaplist=" + wifiaplist;
+            } else if (params[0].equals("workon")) {
+                urlString = RestURL.CHECKWORKON_URL + "phone=" + phone;
+            } else{
+                urlString = RestURL.SERVER_URL;
+                Log.d("eisen", "");
+            }
 
             Log.d("eisen", urlString);
 
