@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFF"
+    tools:context="com.planetory.io.BreakRequestActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.NoActionBar.AppBarOverlay"
+        app:elevation="0dp">
+
+        <include layout="@layout/toolbar_break_request" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/activity_break_request_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:text="@string/activity_break_request_title"
+            android:textSize="16sp"
+            android:textColor="#000"
+            />
+
+        <TextView
+            android:id="@+id/activity_break_request_small_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/activity_break_request_title"
+            android:layout_marginTop="5dp"
+            android:text="@string/activity_break_request_small_title"
+            android:textSize="15sp"
+            android:textColor="#BBB" />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_break_request_small_title"
+            android:layout_alignParentStart="true"
+            android:id="@+id/activity_break_request_radiogroup">
+
+            <RadioButton
+                android:id="@+id/activity_break_request_rbtn_meal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="20dp"
+                android:text="@string/activity_break_request_meal"
+                android:textSize="18sp"/>
+
+            <RadioButton
+                android:id="@+id/activity_break_request_rbtn_rest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="15dp"
+                android:text="@string/activity_break_request_rest"
+                android:textSize="18sp"/>
+
+            <RadioButton
+                android:id="@+id/activity_break_request_rbtn_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="15dp"
+                android:text="@string/activity_break_request_work_outside"
+                android:textSize="18sp"/>
+
+            <RadioButton
+                android:id="@+id/activity_break_request_rbtn_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="15dp"
+                android:text="@string/activity_break_request_other"
+                android:textSize="18sp"/>
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/activity_break_request_edt_reason"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_alignParentStart="true"
+            android:padding="5dp"
+            android:layout_below="@+id/activity_break_request_radiogroup"
+            android:layout_marginTop="20dp"
+            android:gravity="top|start"
+            android:background="@drawable/memo_box"
+            android:inputType="textMultiLine"
+            android:hint="@string/activity_break_request_other_hint" />
+
+        <ImageButton
+            android:id="@+id/activity_break_request_btn_next"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/btn_next_sky"/>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

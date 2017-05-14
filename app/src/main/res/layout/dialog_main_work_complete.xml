@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@null"
-        android:text="@string/dialog_main_ok"
+        android:text="@string/dialog_ok"
         android:textColor="@color/IO_basic"
         android:textSize="18sp" />
 </LinearLayout>

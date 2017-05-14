@@ -1,6 +1,8 @@
 package com.planetory.io;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +14,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,12 +28,14 @@ import java.util.TimerTask;
 public class MainNewActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String DEFAULT_PREFERENCE = "io_pref";
+    static final String DEFAULT_PREFERENCE = "io_pref";
+    static final int REQUEST_BREAK = 0;
+
+    static final int EMPLOYEE_STATE_LEAVE = 0;
+    static final int EMPLOYEE_STATE_WORK = 1;
+    static final int EMPLOYEE_STATE_BREAK = 2;
 
     private final String PREF_EMPLOYEE_STATE = "employee_state";
-    private final int EMPLOYEE_STATE_LEAVE = 0;
-    private final int EMPLOYEE_STATE_WORK = 1;
-    private final int EMPLOYEE_STATE_BREAK = 2;
     private int EMPLOYEE_STATE;
 
     private final int LEAVE_TIMER_ID = 0;
@@ -85,7 +88,7 @@ public class MainNewActivity extends AppCompatActivity
         }
     });
 
-
+    //TODO:"월", "일", 요일 문자열을 xml에서 얻어오도록 바꾸기.
     public String toDayofWeek(int i){
         String day = "";
 
@@ -143,7 +146,7 @@ public class MainNewActivity extends AppCompatActivity
 
     private void basicSetting(){
         //자동 생성된 기본 설정
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_break_request_toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main_drawer_layout);
@@ -205,8 +208,25 @@ public class MainNewActivity extends AppCompatActivity
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EMPLOYEE_STATE = EMPLOYEE_STATE_BREAK;
-                stateSetting(true);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainNewActivity.this);
+                builder.setTitle(R.string.dialog_main_pause_title);
+                builder.setMessage(R.string.dialog_main_pause_message);
+                builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainNewActivity.this, BreakRequestActivity.class);
+                        startActivityForResult(intent, REQUEST_BREAK);
+                    }
+                });
+                builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 
@@ -225,6 +245,17 @@ public class MainNewActivity extends AppCompatActivity
                 stateSetting(true);
             }
         });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_BREAK){
+            if(resultCode == RESULT_OK){
+                EMPLOYEE_STATE = EMPLOYEE_STATE_BREAK;
+                stateSetting(true);
+            }
+        }
     }
 
 
