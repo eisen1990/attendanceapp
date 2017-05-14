@@ -85,9 +85,12 @@
 
     <string name="dialog_main_am">am</string>
     <string name="dialog_main_pm">pm</string>
-    <string name="dialog_main_work_complete">출근 처리가 완료되었습니다!</string>
+    <string name="dialog_main_punchin_complete">출근 처리가 완료되었습니다!</string>
+    <string name="dialog_main_punchout_complete">퇴근 처리가 완료되었습니다!</string>
     <string name="dialog_main_pause_title">자리비움</string>
     <string name="dialog_main_pause_message">자리비움을 신청하시겠습니까?</string>
+    <string name="dialog_main_ok">확인</string>
+    <string name="dialog_main_wifi_enabled">활성화하기</string>
 
     <string name="activity_break_request_app_title">자리비움 신청</string>
     <string name="activity_break_request_title">근무 상태를 자리비움 중으로 변경하시겠습니까?</string>
@@ -97,15 +100,7 @@
     <string name="activity_break_request_work_outside">외부근무</string>
     <string name="activity_break_request_other">기타</string>
     <string name="activity_break_request_other_hint">입력해 주세요.</string>
-    <string name="activity_main_work_pause">자리비움</string>
-    <string name="activity_main_work_return">복귀</string>
-    <string name="activity_main_work_punch_out">퇴근</string>
 
-    <string name="dialog_main_am">am</string>
-    <string name="dialog_main_pm">pm</string>
-    <string name="dialog_main_ok">확인</string>
-    <string name="dialog_main_work_complete">출근 처리가 완료되었습니다!</string>
-    <string name="dialog_main_wifi_enabled">활성화하기</string>
 
 
     <string name="role_switching_to_leader">리더 모드로 변경</string>

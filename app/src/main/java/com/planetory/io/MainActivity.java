@@ -1,36 +1,36 @@
 package com.planetory.io;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.text.format.DateFormat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
-
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,29 +41,41 @@ public class MainActivity extends AppCompatActivity
     BackPressCloseHandler backPressCloseHandler;
     WifiControl wifiControl;
     private URLTask urlTask = null;
-
     private String user_phone;
 
-    //STORE_LOCATION 값은 추후 직원의 매장 정보를 가지고 오는데 사용될 변수
-    private String STORE_LOCATION = "EASW";
+    static final String DEFAULT_PREFERENCE = "io_pref";
+    static final int REQUEST_BREAK = 0;
 
-    private final int TIMER_ID = 0;
+    static final int EMPLOYEE_STATE_LEAVE = 0;
+    static final int EMPLOYEE_STATE_WORK = 1;
+    static final int EMPLOYEE_STATE_BREAK = 2;
+
+    private final String PREF_EMPLOYEE_STATE = "employee_state";
+    private int EMPLOYEE_STATE;
+
+    private final int LEAVE_TIMER_ID = 0;
+    private final int WORK_TIMER_ID = 1;
+
+    String TIME_AM;
+    String TIME_PM;
+    SharedPreferences APP_PREF;
+
+    FrameLayout frameLayout;
+
+    RelativeLayout layoutLeave;
+    RelativeLayout layoutWork;
+    TextView txtLeaveTime;
+    TextView txtLeaveDate;
+    TextView txtLeaveMeridiem;
+    TextView txtWorkClock;
+    Button btnPunchin;
+    Button btnPause;
+    Button btnReturn;
+    Button btnPunchout;
     Button NavigationBtn;
-    Button StartBtn;
-    Button StopBtn;
-    ToggleButton BreakBtn;
-    private final int EMPLOY_STATE_WORK = 1;
-    private final int EMPLOY_STATE_LEAVE = 2;
-    private final int EMPLOY_STATE_BREAK_START = 3;
-    private final int EMPLOY_STATE_BREAK_STOP = 4;
-    private int EMPLOY_STATE = EMPLOY_STATE_LEAVE;
 
-    private Timer timer;
-
-    ClockView clockView;
-    TextView LEAVE_TIME;
-
-    ConstraintLayout constraintLayout;
+    private Timer leaveTimer;
+    private Timer workTimer;
 
 
     private String getCurrentTime() {
@@ -73,275 +85,346 @@ public class MainActivity extends AppCompatActivity
         return t;
     }
 
-
     Handler handler = new Handler(new Handler.Callback() {
 
         @Override
         public boolean handleMessage(Message msg) {
-            if (msg.what == TIMER_ID) {
-                clockView.invalidate();
-                String time = (String) msg.obj;
+            Calendar calendar = Calendar.getInstance();
+
+            String sMeridiem = calendar.get(Calendar.HOUR_OF_DAY) >= 12 ? TIME_PM : TIME_AM;
+            CharSequence cDate = calendar.get(Calendar.MONTH) >= 10 ? DateFormat.format("MM월 dd일", calendar) :
+                    DateFormat.format("M월 dd일", calendar);
+            String sWeekday = "(" + toDayofWeek(calendar.get(Calendar.DAY_OF_WEEK)) + ')';
+            String sDate = cDate.toString() + ' ' + sWeekday;
+
+            if (msg.what == LEAVE_TIMER_ID) {
+                CharSequence cTime = DateFormat.format("hh:mm:ss", calendar);
+
+                txtLeaveTime.setText(cTime);
+                txtLeaveMeridiem.setText(sMeridiem);
+                txtLeaveDate.setText(sDate);
+            } else if (msg.what == WORK_TIMER_ID) {
+                CharSequence cTime = calendar.get(Calendar.HOUR) >= 10 ? DateFormat.format("hh:mm", calendar) :
+                        DateFormat.format("h:mm", calendar);
+                String sClock = sDate + ' ' + sMeridiem + ' ' + cTime.toString();
+
+                txtWorkClock.setText(sClock);
             }
             return true;
         }
     });
 
+    //TODO:"월", "일", 요일 문자열을 xml에서 얻어오도록 바꾸기.
+    public String toDayofWeek(int i) {
+        String day = "";
 
-    public String getStartTimeFromDB() {
-        /*
-            DB 또는 앱에서 직원의 당일 스케줄 시작시간을 가지고 온다.
-            start_time 변수는 DB로 부터 오늘의 일과 시작 시간을 받아온다.
-            start_time의 유형은 HH:mm:ss 포맷으로 가져온다.
-            DB에서 받아온 Text 값을 float 형으로 교체해주는 루틴이 들어가야된다.
-         */
-        String start_time = null;
-//        start_time = "24:00:00";
-
-        return start_time;
+        switch (i) {
+            case 1:
+                day = "일";
+                break;
+            case 2:
+                day = "월";
+                break;
+            case 3:
+                day = "화";
+                break;
+            case 4:
+                day = "수";
+                break;
+            case 5:
+                day = "목";
+                break;
+            case 6:
+                day = "금";
+                break;
+            case 7:
+                day = "토";
+                break;
+        }
+        return day;
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user_phone = getIntent().getExtras().getString("user_phone");
-        urlTask = new URLTask(user_phone);
-        urlTask.execute("workon");
         setContentView(R.layout.activity_main);
+
+        user_phone = getIntent().getExtras().getString("user_phone");
+
         backPressCloseHandler = new BackPressCloseHandler(this);
         wifiControl = new WifiControl(this);
 
-        constraintLayout = (ConstraintLayout) findViewById(R.id.content_main);
+        TIME_AM = getString(R.string.activity_main_am);
+        TIME_PM = getString(R.string.activity_main_pm);
+        APP_PREF = getSharedPreferences(DEFAULT_PREFERENCE, MODE_PRIVATE);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        frameLayout = (FrameLayout) findViewById(R.id.content_main);
+        layoutLeave = (RelativeLayout) findViewById(R.id.activity_main_layout_leave);
+        layoutWork = (RelativeLayout) findViewById(R.id.activity_main_layout_work);
+        txtLeaveDate = (TextView) findViewById(R.id.activity_main_leave_txt_date);
+        txtLeaveTime = (TextView) findViewById(R.id.activity_main_leave_txt_time);
+        txtLeaveMeridiem = (TextView) findViewById(R.id.activity_main_leave_txt_meridiem);
+        txtWorkClock = (TextView) findViewById(R.id.activity_main_work_txt_clock);
+        btnPunchin = (Button) findViewById(R.id.activity_main_leave_btn_punch_in);
+        btnPause = (Button) findViewById(R.id.activity_main_work_btn_pause);
+        btnReturn = (Button) findViewById(R.id.activity_main_work_btn_return);
+        btnPunchout = (Button) findViewById(R.id.activity_main_work_btn_punch_out);
+        NavigationBtn = (Button) findViewById(R.id.role_switching_btn);
+
+        basicSetting();
+        buttonSetting();
+        stateSetting(false);
+    }
+
+    private void basicSetting() {
+        //자동 생성된 기본 설정
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_break_request_toolbar);
         setSupportActionBar(toolbar);
-
-        clockView = (ClockView) findViewById(R.id.clock_view);
-
-        setButtons();
-
-        timer = new Timer(true);
-        timer.schedule(new TimerTask() {
-            /*
-                매 1초마다 Handler에 메세지 전송해서
-                UI 업데이트를 해준다 디지털 시계 및 원호
-             */
-            @Override
-            public void run() {
-                try {
-                    //시계 값 전달
-                    Message msg = handler.obtainMessage();
-                    msg.what = TIMER_ID;
-                    msg.obj = clockView.getFormatDateTime();
-                    handler.sendMessage(msg);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 1000, 1000);
-
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                Intent intent = new Intent(MainActivity.this, MyWorkHistoryActivity.class);
-                startActivity(intent);
-            }
-        });
-        */
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void setButtons() {
-        StartBtn = (Button) findViewById(R.id.start_btn);
-        StopBtn = (Button) findViewById(R.id.stop_btn);
-        BreakBtn = (ToggleButton) findViewById(R.id.break_btn);
-        NavigationBtn = (Button) findViewById(R.id.role_switching_btn);
+    private void buttonSetting() {
+        btnPunchin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (wifiControl.isWifi()) {
 
-        StartBtn.setOnClickListener(onClickListener);
-        StopBtn.setOnClickListener(onClickListener);
-        BreakBtn.setOnClickListener(onToggleListener);
-        NavigationBtn.setOnClickListener(onClickListener);
+                    //Wifi가 활성화 되있는 경우
+                    //서버에 출근 시각을 전송한다.
+                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask.execute("in");
 
-        /*
-            앱을 사용자가 자주 키고 끄고 할 수 있으므로,
-            현재 근무 상태를 shared preference를 이용해서 앱에 저장하는 것이 나을 듯 하다.
-         */
+                } else {
+                    //신규매장 등록 묻는 코드가 들어갈 부분
 
-        /*
-        if (EMPLOY_STATE == EMPLOY_STATE_LEAVE) {
-            //출근 중이 아닐 때 활성화
-            StopBtn.setEnabled(false);
-            BreakBtn.setEnabled(false);
-        }
+                    //wifi 활성화되지 않았을 경우
+                    Log.d("eisen", "wifi disabled");
+                    LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                    View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, frameLayout, false);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setView(dView);
+                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.setPositiveButton("활성화하기", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d("eisen", "Wifi be enabled");
+                            wifiControl.setWifi();
+                        }
+                    });
+                    builder.create().show();
+                }
+            }
+        });
 
-        if (EMPLOY_STATE == EMPLOY_STATE_WORK) {
-            //출근 했을 때 활성화 앱을 다시 켰을 때
-            StartBtn.setEnabled(false);
-        }
-        */
-    }
+        btnPunchout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (wifiControl.isWifi()) {
 
-    private void stateMessage(int STATE) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        switch (STATE) {
-            case EMPLOY_STATE_WORK:
-                alertBuilder.setTitle("출근 처리가 완료되었습니다.");
-                alertBuilder.setMessage(clockView.getFormatDateTime());
-                break;
-            case EMPLOY_STATE_LEAVE:
-                alertBuilder.setTitle("퇴근 처리가 완료되었습니다.");
-                alertBuilder.setMessage(clockView.getFormatDateTime());
-                break;
-        }
-        alertBuilder.show();
-    }
-
-    Button.OnClickListener onClickListener = new Button.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.start_btn:
-                    /*
-                        근무 시작 버튼
-                        Wifi 스캔 및 실제 출근시간 기록
-                     */
-//                    wifiControl.scanWifi(STORE_LOCATION);
-                    JSONObject jsonObject = wifiControl.scanWifi();
-
-                    if (wifiControl.isWifi())
-                    // 이전 Activity들로 부터 넘어온 user_phone과, 현재 시간, json->String으로 변환한 와이파이 목록 전달
-                    {
-                        urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
-                        urlTask.execute("in");
-                    } else {
-                        Log.d("eisen", "wifi disabled");
-                        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-                        View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, constraintLayout, false);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setView(dView);
-                        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        builder.setPositiveButton("활성화하기", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d("eisen", "Wifi be enabled");
-                                wifiControl.setWifi();
-                            }
-                        });
-                        builder.create().show();
-                    }
-
-                    break;
-                case R.id.stop_btn:
-                    /*
-                        근무 종료 버튼
-                    */
+                    //Wifi가 활성화 되있는 경우
+                    //서버에 퇴근 시간을 전송한다.
                     urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
                     urlTask.execute("out");
 
-                    break;
-                case R.id.role_switching_btn:
-                    /*
-                        리더 모드로 변경
-                     */
-                    Intent intent = new Intent(MainActivity.this, LeaderMainActivity.class);
-                    intent.putExtra("user_phone", user_phone);
-                    startActivity(intent);
-                    break;
+                } else {
+                    //wifi 활성화되지 않았을 경우
+                    Log.d("eisen", "wifi disabled");
+                    LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                    View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, frameLayout, false);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setView(dView);
+                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.setPositiveButton("활성화하기", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d("eisen", "Wifi be enabled");
+                            wifiControl.setWifi();
+                        }
+                    });
+                    builder.create().show();
+                }
             }
-        }
-    };
+        });
 
-    ToggleButton.OnClickListener onToggleListener = new ToggleButton.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.break_btn:
-                    /*
-                        휴식 버튼
-                     */
-                    if (!BreakBtn.isChecked()) {
-                        /*
-                            휴식 상태가 아닐 경우 휴식 상태로 바꾼다.
-                            쉬는 시간을 DB에 등록
-                         */
-//                        clockView.
-//                        Toast.makeText(MainActivity.this, "색깔아 바껴라", Toast.LENGTH_SHORT).show();
-                        Log.d("isCheck toggle", "색깔바껴야되는디..");
-                        EMPLOY_STATE = EMPLOY_STATE_BREAK_START;
-                        clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
-                    } else {
-                        /*
-                            휴식 상태일 경우 휴식 종료로 바꾼다.
-                            쉬는 시간 종료를 DB에 등록
-                         */
-//                        Toast.makeText(MainActivity.this, "휴식 끝", Toast.LENGTH_SHORT).show();
-                        Log.d("isCheck toggle", "휴식 종료 들어간다.");
-                        EMPLOY_STATE = EMPLOY_STATE_BREAK_STOP;
+        NavigationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LeaderMainActivity.class);
+                intent.putExtra("user_phone", user_phone);
+                startActivity(intent);
+            }
+        });
+
+        /*
+            이하는 일단 테스트용
+         */
+        btnPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(R.string.dialog_main_pause_title);
+                builder.setMessage(R.string.dialog_main_pause_message);
+                builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, BreakRequestActivity.class);
+                        startActivityForResult(intent, REQUEST_BREAK);
                     }
-                    break;
+                });
+                builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
+//                stateSetting(true);
+            }
+        });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_BREAK) {
+            if (resultCode == RESULT_OK) {
+                EMPLOYEE_STATE = EMPLOYEE_STATE_BREAK;
+                stateSetting(true);
             }
         }
-    };
+    }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
+
+    private void stateSetting(boolean set) {
+        /*
+            SharedPreference에서 앱의 상태를 가져오거나
+            앱의 상태를 SharedPreference에 저장
+         */
+        /*
+        if (set) {
+            SharedPreferences.Editor editor = APP_PREF.edit();
+            editor.putInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE);
+            editor.apply();
         } else {
-            backPressCloseHandler.onBackPressed();
+            EMPLOYEE_STATE = APP_PREF.getInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE_LEAVE);
+        }
+
+        switch (EMPLOYEE_STATE) {
+            case EMPLOYEE_STATE_LEAVE:
+                leaveSetting();
+                break;
+            case EMPLOYEE_STATE_BREAK:
+                workSetting();
+                breakSetting(true);
+                break;
+            case EMPLOYEE_STATE_WORK:
+                workSetting();
+                breakSetting(false);
+                break;
+        }
+        */
+        //sharedpreference 안쓰고 서버 연결해서 처리로 우선 바꿈
+        urlTask = new URLTask(user_phone);
+        urlTask.execute("workon");
+
+    }
+
+    private void leaveSetting() {
+        leaveTimer = new Timer(true);
+        layoutWork.setVisibility(View.GONE);
+        layoutLeave.setVisibility(View.VISIBLE);
+
+        if (workTimer != null) {
+            workTimer.cancel();
+        }
+
+        leaveTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    handler.sendEmptyMessage(LEAVE_TIMER_ID);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void workSetting() {
+        workTimer = new Timer(true);
+        layoutLeave.setVisibility(View.GONE);
+        layoutWork.setVisibility(View.VISIBLE);
+
+        if (leaveTimer != null) {
+            leaveTimer.cancel();
+        }
+
+        workTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    handler.sendEmptyMessage(WORK_TIMER_ID);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void breakSetting(boolean pause) {
+        if (pause) {
+            btnPause.setVisibility(View.GONE);
+            btnReturn.setVisibility(View.VISIBLE);
+        } else {
+            btnPause.setVisibility(View.VISIBLE);
+            btnReturn.setVisibility(View.GONE);
         }
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-    }
 
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+    private boolean isWifiValid() {
+        //Wifi 리스트를 체크해서 서버에 등록된 Wi-fi가 있는지 확인.
         return true;
     }
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            backPressCloseHandler.onBackPressed();
         }
-
-        return super.onOptionsItemSelected(item);
     }
-    */
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -367,7 +450,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        timer.cancel();
+        if (leaveTimer != null) leaveTimer.cancel();
+        if (workTimer != null) workTimer.cancel();
         super.onDestroy();
     }
 
@@ -392,42 +476,92 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
-            if( s == null ) s = "main_activity_error";
+            if (s == null) s = "main_activity_error";
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
 
+
             if (s.equals("INOK")) {
-                StopBtn.setEnabled(true);
-                BreakBtn.setEnabled(true);
-                StartBtn.setEnabled(false);
-                stateMessage(EMPLOY_STATE_WORK);
-//                clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
+                //나중에 얼굴 인식 부분을 넣어야 하지만, 일단은 넘어가기
+                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
+                TextView txtTime = (TextView) dView.findViewById(R.id.dialog_main_work_time);
+                TextView txtMessage = (TextView) dView.findViewById(R.id.dialog_main_work_txt_complete);
+                Button btnOk = (Button) dView.findViewById(R.id.dialog_main_work_btn_ok);
+
+                //현재 시간을 텍스트뷰에 표시하는 부분
+                Calendar calendar = Calendar.getInstance();
+                CharSequence cTime = DateFormat.format("hh:mm:ss", calendar);
+                String sMeridiem = calendar.get(Calendar.HOUR_OF_DAY) >= 12 ? getString(R.string.dialog_main_pm)
+                        : getString(R.string.dialog_main_am);
+                String sTime = cTime.toString() + ' ' + sMeridiem;
+                txtTime.setText(sTime);
+                txtMessage.setText(getString(R.string.dialog_main_punchin_complete));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(dView);
+
+                //다이얼로그를 표시하는 부분
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                btnOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                //출근을 처리하는 부분
+                EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
+                workSetting();
+                breakSetting(false);
             } else if (s.equals("OUTOK")) {
-                StartBtn.setEnabled(true);
-                StopBtn.setEnabled(false);
-                BreakBtn.setEnabled(false);
-                stateMessage(EMPLOY_STATE_LEAVE);
-//                clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
-            } else if (s.equals("WORKONleader")) {
-                StopBtn.setEnabled(true);
-                BreakBtn.setEnabled(true);
-                StartBtn.setEnabled(false);
+                //나중에 얼굴 인식 부분을 넣어야 하지만, 일단은 넘어가기
+                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
+                TextView txtTime = (TextView) dView.findViewById(R.id.dialog_main_work_time);
+                TextView txtMessage = (TextView) dView.findViewById(R.id.dialog_main_work_txt_complete);
+                Button btnOk = (Button) dView.findViewById(R.id.dialog_main_work_btn_ok);
+
+                //현재 시간을 텍스트뷰에 표시하는 부분
+                Calendar calendar = Calendar.getInstance();
+                CharSequence cTime = DateFormat.format("hh:mm:ss", calendar);
+                String sMeridiem = calendar.get(Calendar.HOUR_OF_DAY) >= 12 ? getString(R.string.dialog_main_pm)
+                        : getString(R.string.dialog_main_am);
+                String sTime = cTime.toString() + ' ' + sMeridiem;
+                txtTime.setText(sTime);
+                txtMessage.setText(getString(R.string.dialog_main_punchout_complete));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(dView);
+
+                //다이얼로그를 표시하는 부분
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                btnOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                //출근을 처리하는 부분
+                EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
+                leaveSetting();
+            }
+            else if (s.equals("WORKONleader")) {
+                workSetting();
             } else if (s.equals("WORKNOTYETleader")) {
-                StartBtn.setEnabled(true);
-                StopBtn.setEnabled(false);
-                BreakBtn.setEnabled(false);
+                leaveSetting();
             } else if (s.equals("WORKONworker")){
-                StopBtn.setEnabled(true);
-                BreakBtn.setEnabled(true);
-                StartBtn.setEnabled(false);
+                workSetting();
                 NavigationBtn.setVisibility(View.INVISIBLE);
             } else if (s.equals("WORKNOTYETworker")) {
-                StartBtn.setEnabled(true);
-                StopBtn.setEnabled(false);
-                BreakBtn.setEnabled(false);
+                leaveSetting();
                 NavigationBtn.setVisibility(View.INVISIBLE);
             }
-
         }
 
         @Override

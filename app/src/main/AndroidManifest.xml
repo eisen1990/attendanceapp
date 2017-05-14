@@ -77,9 +77,6 @@
             android:name=".ResetPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".MainNewActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".LeaderMainActivity"
             android:label="@string/title_activity_leader_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
