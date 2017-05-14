@@ -7,45 +7,31 @@
     android:id="@+id/activity_break_request_toolbar"
     app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay">
 
-    <!-- 겉모습만 갖춰두기 -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/toolbar_main_img_location"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="40dp"
-            app:srcCompat="@drawable/ic_location_color" />
-
         <TextView
-            android:id="@+id/toolbar_main_txt_location"
+            android:id="@+id/toolbar_break_request_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
-            android:text="ABC 컴퍼니"
+            android:layout_centerInParent="true"
+            android:text="@string/activity_break_request_app_title"
             android:textSize="20sp"
             android:textColor="@color/IO_basic"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
         <ImageButton
-            android:id="@+id/toolbar_main_btn_alarm"
+            android:id="@+id/toolbar_break_request_btn_close"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
             android:background="@null"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/ic_main_alarm" />
+            app:srcCompat="@drawable/ic_close_sky" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>

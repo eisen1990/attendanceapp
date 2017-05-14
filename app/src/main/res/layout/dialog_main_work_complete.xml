@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/dialog_main_work_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/ic_profile_basic" />
+
+    <TextView
+        android:id="@+id/dialog_main_work_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_gravity="center_horizontal"
+        android:text="08:00:15 am"
+        android:textColor="#000"
+        android:textSize="22sp"/>
+
+    <TextView
+        android:id="@+id/dialog_main_work_txt_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/dialog_main_work_complete"
+        android:textSize="18sp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/lightGray" />
+    
+    <Button
+        android:id="@+id/dialog_main_work_btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@null"
+        android:text="@string/dialog_ok"
+        android:textColor="@color/IO_basic"
+        android:textSize="18sp" />
+</LinearLayout>

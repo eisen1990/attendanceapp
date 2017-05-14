@@ -22,6 +22,9 @@
     </string>
 
     <!-- xml에서 가져오기 테스트 -->
+    <string name="dialog_ok">확인</string>
+    <string name="dialog_cancel">취소</string>
+
     <string name="activity_load_update_dialog_title">업데이트</string>
     <string name="activity_load_update_dialog_message">앱이 업데이트 되었습니다.\n
         더 나은 서비스 이용을 위해 스토어에서 업데이트를 받아주세요.\n</string>
@@ -76,6 +79,24 @@
     <string name="activity_main_am">오전</string>
     <string name="activity_main_pm">오후</string>
     <string name="activity_main_leave_punch_in">출근</string>
+    <string name="activity_main_work_pause">자리비움</string>
+    <string name="activity_main_work_return">복귀</string>
+    <string name="activity_main_work_punch_out">퇴근</string>
+
+    <string name="dialog_main_am">am</string>
+    <string name="dialog_main_pm">pm</string>
+    <string name="dialog_main_work_complete">출근 처리가 완료되었습니다!</string>
+    <string name="dialog_main_pause_title">자리비움</string>
+    <string name="dialog_main_pause_message">자리비움을 신청하시겠습니까?</string>
+
+    <string name="activity_break_request_app_title">자리비움 신청</string>
+    <string name="activity_break_request_title">근무 상태를 자리비움 중으로 변경하시겠습니까?</string>
+    <string name="activity_break_request_small_title">아래에서 사유를 선택해 주세요</string>
+    <string name="activity_break_request_meal">식사</string>
+    <string name="activity_break_request_rest">휴식</string>
+    <string name="activity_break_request_work_outside">외부근무</string>
+    <string name="activity_break_request_other">기타</string>
+    <string name="activity_break_request_other_hint">입력해 주세요.</string>
     <string name="activity_main_work_pause">자리비움</string>
     <string name="activity_main_work_return">복귀</string>
     <string name="activity_main_work_punch_out">퇴근</string>

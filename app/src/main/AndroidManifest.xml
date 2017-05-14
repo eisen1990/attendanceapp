@@ -83,6 +83,7 @@
             android:name=".LeaderMainActivity"
             android:label="@string/title_activity_leader_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".BreakRequestActivity"></activity>
     </application>
 
 </manifest>

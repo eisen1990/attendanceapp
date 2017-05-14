@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--이미지 크기 문제로 인해 현재는 쓰이지 않음 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="false" android:drawable="@drawable/rbtn_checked"/>
+    <item android:state_checked="true" android:drawable="@drawable/rbtn_unchecked"/>
+</selector>
