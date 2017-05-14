@@ -57,7 +57,8 @@
     <string name="activity_login_reset_password">비밀번호 재설정 ></string>
 
     <string name="activity_login_unregistered_number">가입되지 않은 휴대폰 번호입니다.</string>
-    <string name="activity_login_wrong_password">비밀번호가 일치하지 않습니다</string>
+    <string name="activity_login_wrong_password">비밀번호가 일치하지 않습니다.</string>
+    <string name="activity_login_server_error">서버에 연결할 수 없습니다.</string>
 
     <string name="activity_reset_pwd_phone_small_title">계정을 찾으려면 휴대폰 번호를 입력하세요</string>
     <string name="activity_reset_pwd_phone_unregistered_number">가입되지 않은 휴대폰 번호입니다</string>
@@ -75,4 +76,19 @@
     <string name="activity_main_am">오전</string>
     <string name="activity_main_pm">오후</string>
     <string name="activity_main_leave_punch_in">출근</string>
+    <string name="activity_main_work_pause">자리비움</string>
+    <string name="activity_main_work_return">복귀</string>
+    <string name="activity_main_work_punch_out">퇴근</string>
+
+    <string name="dialog_main_am">am</string>
+    <string name="dialog_main_pm">pm</string>
+    <string name="dialog_main_ok">확인</string>
+    <string name="dialog_main_work_complete">출근 처리가 완료되었습니다!</string>
+    <string name="dialog_main_wifi_enabled">활성화하기</string>
+
+
+    <string name="role_switching_to_leader">리더 모드로 변경</string>
+    <string name="role_switching_to_worker">근무자 모드로 변경</string>
+    <string name="title_activity_leader_main">LeaderMainActivity</string>
+
 </resources>

@@ -1,13 +1,16 @@
 package com.planetory.io;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private String STORE_LOCATION = "EASW";
 
     private final int TIMER_ID = 0;
+    Button NavigationBtn;
     Button StartBtn;
     Button StopBtn;
     ToggleButton BreakBtn;
@@ -58,6 +62,8 @@ public class MainActivity extends AppCompatActivity
 
     ClockView clockView;
     TextView LEAVE_TIME;
+
+    ConstraintLayout constraintLayout;
 
 
     private String getCurrentTime() {
@@ -105,6 +111,8 @@ public class MainActivity extends AppCompatActivity
         backPressCloseHandler = new BackPressCloseHandler(this);
         wifiControl = new WifiControl(this);
 
+        constraintLayout = (ConstraintLayout) findViewById(R.id.content_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -132,7 +140,7 @@ public class MainActivity extends AppCompatActivity
             }
         }, 1000, 1000);
 
-
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +152,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+        */
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,16 +169,19 @@ public class MainActivity extends AppCompatActivity
         StartBtn = (Button) findViewById(R.id.start_btn);
         StopBtn = (Button) findViewById(R.id.stop_btn);
         BreakBtn = (ToggleButton) findViewById(R.id.break_btn);
+        NavigationBtn = (Button) findViewById(R.id.role_switching_btn);
 
         StartBtn.setOnClickListener(onClickListener);
         StopBtn.setOnClickListener(onClickListener);
         BreakBtn.setOnClickListener(onToggleListener);
+        NavigationBtn.setOnClickListener(onClickListener);
 
         /*
             앱을 사용자가 자주 키고 끄고 할 수 있으므로,
             현재 근무 상태를 shared preference를 이용해서 앱에 저장하는 것이 나을 듯 하다.
          */
 
+        /*
         if (EMPLOY_STATE == EMPLOY_STATE_LEAVE) {
             //출근 중이 아닐 때 활성화
             StopBtn.setEnabled(false);
@@ -180,6 +192,7 @@ public class MainActivity extends AppCompatActivity
             //출근 했을 때 활성화 앱을 다시 켰을 때
             StartBtn.setEnabled(false);
         }
+        */
     }
 
     private void stateMessage(int STATE) {
@@ -209,9 +222,32 @@ public class MainActivity extends AppCompatActivity
 //                    wifiControl.scanWifi(STORE_LOCATION);
                     JSONObject jsonObject = wifiControl.scanWifi();
 
+                    if (wifiControl.isWifi())
                     // 이전 Activity들로 부터 넘어온 user_phone과, 현재 시간, json->String으로 변환한 와이파이 목록 전달
-                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
-                    urlTask.execute("in");
+                    {
+                        urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                        urlTask.execute("in");
+                    } else {
+                        Log.d("eisen", "wifi disabled");
+                        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                        View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, constraintLayout, false);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setView(dView);
+                        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        builder.setPositiveButton("활성화하기", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("eisen", "Wifi be enabled");
+                                wifiControl.setWifi();
+                            }
+                        });
+                        builder.create().show();
+                    }
 
                     break;
                 case R.id.stop_btn:
@@ -221,6 +257,14 @@ public class MainActivity extends AppCompatActivity
                     urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
                     urlTask.execute("out");
 
+                    break;
+                case R.id.role_switching_btn:
+                    /*
+                        리더 모드로 변경
+                     */
+                    Intent intent = new Intent(MainActivity.this, LeaderMainActivity.class);
+                    intent.putExtra("user_phone", user_phone);
+                    startActivity(intent);
                     break;
             }
         }
@@ -348,6 +392,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
+            if( s == null ) s = "main_activity_error";
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
 
@@ -363,16 +408,24 @@ public class MainActivity extends AppCompatActivity
                 BreakBtn.setEnabled(false);
                 stateMessage(EMPLOY_STATE_LEAVE);
 //                clockView.setHISTORY_COUNT(clockView.getFormatDateTime(), EMPLOY_STATE);
-            } else if (s.equals("WORKON")) {
+            } else if (s.equals("WORKONleader")) {
                 StopBtn.setEnabled(true);
                 BreakBtn.setEnabled(true);
                 StartBtn.setEnabled(false);
-            } else if (s.equals("WORKNOTYET")){
+            } else if (s.equals("WORKNOTYETleader")) {
                 StartBtn.setEnabled(true);
                 StopBtn.setEnabled(false);
                 BreakBtn.setEnabled(false);
-            } else {
-
+            } else if (s.equals("WORKONworker")){
+                StopBtn.setEnabled(true);
+                BreakBtn.setEnabled(true);
+                StartBtn.setEnabled(false);
+                NavigationBtn.setVisibility(View.INVISIBLE);
+            } else if (s.equals("WORKNOTYETworker")) {
+                StartBtn.setEnabled(true);
+                StopBtn.setEnabled(false);
+                BreakBtn.setEnabled(false);
+                NavigationBtn.setVisibility(View.INVISIBLE);
             }
 
         }
@@ -393,7 +446,7 @@ public class MainActivity extends AppCompatActivity
                 urlString = RestURL.CHECKOUTOFWORK_URL + "phone=" + phone + "&time=" + time + "&wifiaplist=" + wifiaplist;
             } else if (params[0].equals("workon")) {
                 urlString = RestURL.CHECKWORKON_URL + "phone=" + phone;
-            } else{
+            } else {
                 urlString = RestURL.SERVER_URL;
                 Log.d("eisen", "");
             }

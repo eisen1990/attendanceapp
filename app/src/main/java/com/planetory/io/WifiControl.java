@@ -130,4 +130,19 @@ public class WifiControl {
         return false;
     }
 
+    public boolean isWifi() {
+        boolean flag = false;
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if(wifiManager.isWifiEnabled()) {
+            flag = true;
+        }
+
+        return flag;
+    }
+
+    public void setWifi() {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(true);
+    }
+
 }

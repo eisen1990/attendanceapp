@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private String UnregisteredNumber;
     private String WrongPassword;
+    private String ServerError;
 
     EditText TxtphoneNumber;
     EditText Txtpassword;
@@ -52,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
 
         UnregisteredNumber = getString(R.string.activity_login_unregistered_number);
         WrongPassword = getString(R.string.activity_login_wrong_password);
+        ServerError = getString(R.string.activity_login_server_error);
 
         //View 설정
         ImageButton btn_back = (ImageButton) findViewById(R.id.activity_login_btn_back);
@@ -137,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
+            if (s == null) s = "serverError\0";
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
             if (s.equals("loginUser")) {
@@ -156,6 +159,9 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("eisen", "Unregistered user");
                 TxtphoneNumber.setError(UnregisteredNumber);
                 Toast.makeText(LoginActivity.this, UnregisteredNumber, Toast.LENGTH_SHORT).show();
+            } else if (s.equals("serverError")) {
+                Log.d("eisen", "Server Error");
+                Toast.makeText(LoginActivity.this, ServerError, Toast.LENGTH_SHORT).show();
             } else {
                 Log.d("eisen", "post error");
                 Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
