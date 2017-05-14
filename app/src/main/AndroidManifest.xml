@@ -79,8 +79,9 @@
         <activity
             android:name=".LeaderMainActivity"
             android:label="@string/title_activity_leader_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".BreakRequestActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BreakRequestActivity" />
+        <activity android:name=".MemberInfoActivity"></activity>
     </application>
 
 </manifest>

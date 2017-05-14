@@ -8,5 +8,6 @@ public class RestURL {
     static public final String CHECKINTOWORK_URL = SERVER_URL + "checkintowork/";
     static public final String CHECKOUTOFWORK_URL = SERVER_URL + "checkoutofwork/";
     static public final String CHECKWORKON_URL = SERVER_URL + "workon/";
+    static public final String GETMEMBERS_URL = SERVER_URL + "getMembers";
 
 }

@@ -102,9 +102,16 @@
     <string name="activity_break_request_other_hint">입력해 주세요.</string>
 
 
-
     <string name="role_switching_to_leader">리더 모드로 변경</string>
     <string name="role_switching_to_worker">근무자 모드로 변경</string>
     <string name="title_activity_leader_main">LeaderMainActivity</string>
+
+    <!-- 리더 모드 네비게이션 -->
+    <string name="punchoutaccept">퇴근 시각 승인</string>
+    <string name="memberinfo">직원정보</string>
+    <string name="storeinfo">근무지정보</string>
+    <string name="setting">설정</string>
+
+    <string name="logout">로그아웃</string>
 
 </resources>

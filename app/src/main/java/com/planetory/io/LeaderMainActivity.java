@@ -27,11 +27,13 @@ public class LeaderMainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         user_phone = getIntent().getExtras().getString("user_phone");
         setContentView(R.layout.activity_leader_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         setButtons();
+        basicSetting();
 
+    }
+
+    private void basicSetting() {
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +44,8 @@ public class LeaderMainActivity extends AppCompatActivity
             }
         });
         */
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -61,11 +65,12 @@ public class LeaderMainActivity extends AppCompatActivity
     Button.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch(v.getId()) {
+            switch (v.getId()) {
                 case R.id.role_switching_btn:
                     Intent intent = new Intent(LeaderMainActivity.this, MainActivity.class);
                     intent.putExtra("user_phone", user_phone);
                     startActivity(intent);
+                    finish();
                     break;
             }
         }
@@ -110,14 +115,18 @@ public class LeaderMainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Intent intent;
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_punchoutaccept) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_memberinfo) {
+            intent = new Intent(LeaderMainActivity.this, MemberInfoActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_storeinfo) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_setting) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_logout) {
 
         }
 

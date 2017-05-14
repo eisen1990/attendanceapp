@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
 
     private void basicSetting() {
         //자동 생성된 기본 설정
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_break_request_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(MainActivity.this, LeaderMainActivity.class);
                 intent.putExtra("user_phone", user_phone);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -606,7 +607,7 @@ public class MainActivity extends AppCompatActivity
                 return output.toString();
 
             } catch (Exception e) {
-                Log.d("Registration Fail", "URL exception");
+                Log.d("MainActivity", "URL exception");
             }
 
             return "URLerror";
