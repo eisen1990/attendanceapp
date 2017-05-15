@@ -1,5 +1,6 @@
 package com.planetory.io;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,14 +39,19 @@ public class MemberInfoActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+            getMemberURL = null;
+
             ArrayList<MemberItem> memberItems = new ArrayList<>();
-            if(s == null) s = "getMembers Fail";
-            else {
+            if (s == null) {
+                s = "getMembers Fail";
+            }
+
+            if (s.indexOf('{') >= 0) {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     JSONArray jsonArray = jsonObject.getJSONArray("List");
 
-                    for(int i = 0; i < jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONArray innerArray = jsonArray.getJSONArray(i);
                         String phone = innerArray.getJSONObject(0).getString("phone");
                         String name = innerArray.getJSONObject(1).getString("name");
@@ -56,7 +62,7 @@ public class MemberInfoActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                for(MemberItem result : memberItems) {
+                for (MemberItem result : memberItems) {
                     Log.d("result 1 : ", result.getPhone());
                     Log.d("result 2 : ", result.getName());
                 }
@@ -69,15 +75,21 @@ public class MemberInfoActivity extends AppCompatActivity {
                 memberInfoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(MemberInfoActivity.this, (String) parent.getAdapter().getItem(position),Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(MemberInfoActivity.this, (String) parent.getAdapter().getItem(position),Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MemberInfoActivity.this, MemberSpecificActivity.class);
+                        intent.putExtra("specific_phone", (String) parent.getAdapter().getItem(position));
+                        startActivity(intent);
                     }
                 });
+            } else {
+                Log.d("eisen", s);
             }
+            Log.d("eisen", s);
         }
 
         @Override
         protected void onCancelled() {
-            super.onCancelled();
+            getMemberURL = null;
         }
 
         @Override

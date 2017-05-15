@@ -114,4 +114,6 @@
 
     <string name="logout">로그아웃</string>
 
+    <string name="specific_store">근무지</string>
+
 </resources>
