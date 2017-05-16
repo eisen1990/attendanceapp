@@ -32,6 +32,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,9 +47,13 @@ public class MainActivity extends AppCompatActivity
     static final String DEFAULT_PREFERENCE = "io_pref";
     static final int REQUEST_BREAK = 0;
 
+    static final String INTENT_USER_PHONE = "user_phone";
+    static final String INTENT_USER_PASSWORD = "user_password";
+
     static final int EMPLOYEE_STATE_LEAVE = 0;
     static final int EMPLOYEE_STATE_WORK = 1;
     static final int EMPLOYEE_STATE_BREAK = 2;
+    static final int EMPLOYEE_STATE_BLANK = 3;
 
     private final String PREF_EMPLOYEE_STATE = "employee_state";
     private int EMPLOYEE_STATE;
@@ -80,7 +85,7 @@ public class MainActivity extends AppCompatActivity
 
     private String getCurrentTime() {
         long time = System.currentTimeMillis();
-        SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
         String t = day.format(new Date(time));
         return t;
     }
@@ -150,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        user_phone = getIntent().getExtras().getString("user_phone");
+        user_phone = getIntent().getExtras().getString(INTENT_USER_PHONE);
 
         backPressCloseHandler = new BackPressCloseHandler(this);
         wifiControl = new WifiControl(this);
@@ -174,6 +179,10 @@ public class MainActivity extends AppCompatActivity
 
         basicSetting();
         buttonSetting();
+
+        //서버로 연결해서 처리하는 부분.
+        urlTask = new URLTask(user_phone);
+        urlTask.execute(RestURL.CHECK_PARAM_WORKON);
         stateSetting(false);
     }
 
@@ -197,28 +206,26 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (wifiControl.isWifi()) {
-
                     //Wifi가 활성화 되있는 경우
                     //서버에 출근 시각을 전송한다.
+
                     urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
-                    urlTask.execute("in");
+                    urlTask.execute(RestURL.CHECK_PARAM_IN);
 
                 } else {
-                    //신규매장 등록 묻는 코드가 들어갈 부분
-
-                    //wifi 활성화되지 않았을 경우
+                     //wifi 활성화되지 않았을 경우
                     Log.d("eisen", "wifi disabled");
                     LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                     View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, frameLayout, false);
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setView(dView);
-                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-                    builder.setPositiveButton("활성화하기", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(R.string.dialog_main_wifi_enabled, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Log.d("eisen", "Wifi be enabled");
@@ -238,7 +245,7 @@ public class MainActivity extends AppCompatActivity
                     //Wifi가 활성화 되있는 경우
                     //서버에 퇴근 시간을 전송한다.
                     urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
-                    urlTask.execute("out");
+                    urlTask.execute(RestURL.CHECK_PARAM_OUT);
 
                 } else {
                     //wifi 활성화되지 않았을 경우
@@ -247,13 +254,13 @@ public class MainActivity extends AppCompatActivity
                     View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, frameLayout, false);
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setView(dView);
-                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-                    builder.setPositiveButton("활성화하기", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(R.string.dialog_main_wifi_enabled, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Log.d("eisen", "Wifi be enabled");
@@ -329,13 +336,12 @@ public class MainActivity extends AppCompatActivity
             SharedPreference에서 앱의 상태를 가져오거나
             앱의 상태를 SharedPreference에 저장
          */
-        /*
         if (set) {
             SharedPreferences.Editor editor = APP_PREF.edit();
             editor.putInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE);
             editor.apply();
         } else {
-            EMPLOYEE_STATE = APP_PREF.getInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE_LEAVE);
+            EMPLOYEE_STATE = APP_PREF.getInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE_BLANK);
         }
 
         switch (EMPLOYEE_STATE) {
@@ -350,12 +356,12 @@ public class MainActivity extends AppCompatActivity
                 workSetting();
                 breakSetting(false);
                 break;
+            case EMPLOYEE_STATE_BLANK:
+                //서버에서 상태를 가져오는 코드가 들어갈 부분
+                EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
+                leaveSetting();
+                break;
         }
-        */
-        //sharedpreference 안쓰고 서버 연결해서 처리로 우선 바꿈
-        urlTask = new URLTask(user_phone);
-        urlTask.execute("workon");
-
     }
 
     private void leaveSetting() {
@@ -456,6 +462,7 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+
     private class URLTask extends AsyncTask<String, Void, String> {
 
         private String phone;
@@ -477,12 +484,11 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
-            if (s == null) s = "main_activity_error";
+            if (s == null) s = RestURL.NULL_STRING + "\0";
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
 
-
-            if (s.equals("INOK")) {
+            if (s.equals(RestURL.PUNCHIN_SUCCESS)) {
                 //나중에 얼굴 인식 부분을 넣어야 하지만, 일단은 넘어가기
                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                 View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
@@ -515,9 +521,8 @@ public class MainActivity extends AppCompatActivity
 
                 //출근을 처리하는 부분
                 EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
-                workSetting();
-                breakSetting(false);
-            } else if (s.equals("OUTOK")) {
+                stateSetting(true);
+            } else if (s.equals(RestURL.PUNCHOUT_SUCCESS)) {
                 //나중에 얼굴 인식 부분을 넣어야 하지만, 일단은 넘어가기
                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                 View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
@@ -597,11 +602,12 @@ public class MainActivity extends AppCompatActivity
                 httpURLConnection.setReadTimeout(10000);
                 httpURLConnection.setRequestMethod("GET");
                 int resCode = httpURLConnection.getResponseCode();
-                if (resCode == httpURLConnection.HTTP_OK) {
+                if (resCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                    String line = null;
+                    String line;
                     while ((line = bufferedReader.readLine()) != null) {
-                        output.append(line + "\n");
+                        output.append(line);
+                        output.append("\n");
                     }
                 }
                 return output.toString();
@@ -610,7 +616,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d("MainActivity", "URL exception");
             }
 
-            return "URLerror";
+            return RestURL.NULL_STRING + "\0";
         }
     }
 }
