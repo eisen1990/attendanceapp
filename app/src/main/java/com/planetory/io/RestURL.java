@@ -26,4 +26,7 @@ class RestURL {
     static final String CHECK_PARAM_WORKON = "workon";
     static final String PUNCHIN_SUCCESS = "INOK";
     static final String PUNCHOUT_SUCCESS = "OUTOK";
+    //TODO : 이 경우들이 존재하는지?
+    static final String PUNCHIN_FAIL = "INOK";
+    static final String PUNCHOUT_FAIL = "OUTOK";
 }

@@ -523,7 +523,6 @@ public class MainActivity extends AppCompatActivity
                 EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
                 stateSetting(true);
             } else if (s.equals(RestURL.PUNCHOUT_SUCCESS)) {
-                //나중에 얼굴 인식 부분을 넣어야 하지만, 일단은 넘어가기
                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                 View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
                 TextView txtTime = (TextView) dView.findViewById(R.id.dialog_main_work_time);
@@ -553,9 +552,9 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
-                //출근을 처리하는 부분
-                EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
-                leaveSetting();
+                //퇴근을 처리하는 부분
+                EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
+                stateSetting(true);
             }
             else if (s.equals("WORKONleader")) {
                 workSetting();
