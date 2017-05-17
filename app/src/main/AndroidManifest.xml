@@ -80,10 +80,13 @@
             android:name=".LeaderMainActivity"
             android:label="@string/title_activity_leader_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BreakRequestActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".BreakRequestActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".MemberInfoActivity" />
-        <activity android:name=".MemberSpecificActivity"></activity>
+        <activity android:name=".MemberSpecificActivity" />
+        <activity android:name=".SettingActivity" />
+        <activity android:name=".PunchTimeEditActivity"></activity>
     </application>
 
 </manifest>

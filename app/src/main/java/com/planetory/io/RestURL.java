@@ -9,6 +9,7 @@ class RestURL {
     static final String CHECKOUTOFWORK_URL = SERVER_URL + "checkoutofwork/";
     static final String CHECKWORKON_URL = SERVER_URL + "workon/";
     static final String GETMEMBERS_URL = SERVER_URL + "getMembers";
+    static public final String SPECMEMBER_URL = SERVER_URL + "specMember/";
 
     static final String NULL_STRING = "serverError";
 

@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -183,9 +184,7 @@ public class MainActivity extends AppCompatActivity
         basicSetting();
         buttonSetting();
 
-        //서버로 연결해서 처리하는 부분.
-        urlTask = new URLTask(user_phone);
-        urlTask.execute(RestURL.CHECK_PARAM_WORKON);
+
         stateSetting(false);
     }
 
@@ -202,6 +201,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        NavigationBtn.setVisibility(View.INVISIBLE);
     }
 
     private void buttonSetting() {
@@ -211,12 +211,12 @@ public class MainActivity extends AppCompatActivity
                 if (wifiControl.isWifi()) {
                     //Wifi가 활성화 되있는 경우
                     //서버에 출근 시각을 전송한다.
-
+                    //여기서 wifi scan 후 JSON array 스트링으로 전송해주고 API에서 다시 처리 urlencode 이용해서 보내야됨
                     urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
                     urlTask.execute(RestURL.CHECK_PARAM_IN);
 
                 } else {
-                     //wifi 활성화되지 않았을 경우
+                    //wifi 활성화되지 않았을 경우
                     Log.d("eisen", "wifi disabled");
                     LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                     View dView = inflater.inflate(R.layout.dialog_main_wifi_enabled, frameLayout, false);
@@ -339,6 +339,7 @@ public class MainActivity extends AppCompatActivity
             SharedPreference에서 앱의 상태를 가져오거나
             앱의 상태를 SharedPreference에 저장
          */
+        /*
         if (set) {
             SharedPreferences.Editor editor = APP_PREF.edit();
             editor.putInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE);
@@ -365,6 +366,10 @@ public class MainActivity extends AppCompatActivity
                 leaveSetting();
                 break;
         }
+        */
+        //서버로 연결해서 처리하는 부분.
+        urlTask = new URLTask(user_phone);
+        urlTask.execute(RestURL.CHECK_PARAM_WORKON);
     }
 
     private void leaveSetting() {
@@ -444,13 +449,13 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == R.id.vacation_request) {
-            // Handle the camera action
-        } else if (id == R.id.loginout) {
+        if (id == R.id.myhistory) {
 
         } else if (id == R.id.settings) {
-            intent = new Intent(MainActivity.this, WifiListActivity.class);
+            intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
+        } else if (id == R.id.loginout) {
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -558,17 +563,31 @@ public class MainActivity extends AppCompatActivity
                 //퇴근을 처리하는 부분
                 EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
                 stateSetting(true);
-            }
-            else if (s.equals("WORKONleader")) {
+            } else if (s.equals("WORKONleader")) {
                 workSetting();
+                NavigationBtn.setVisibility(View.VISIBLE);
             } else if (s.equals("WORKNOTYETleader")) {
                 leaveSetting();
-            } else if (s.equals("WORKONworker")){
+                NavigationBtn.setVisibility(View.VISIBLE);
+            } else if (s.equals("WORKONworker")) {
                 workSetting();
-                NavigationBtn.setVisibility(View.INVISIBLE);
             } else if (s.equals("WORKNOTYETworker")) {
                 leaveSetting();
-                NavigationBtn.setVisibility(View.INVISIBLE);
+            } else if (s.equals("WORKONunknown")){
+                workSetting();
+            }
+            else if (s.equals("WORKNOTYETunknown")) {
+                leaveSetting();
+                Toast.makeText(MainActivity.this, "직급을 알 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                /*
+                    서버 에러일 경우 로그인 액티비티로 돌아간다.
+                 */
+                Toast.makeText(MainActivity.this, "Server error", Toast.LENGTH_SHORT).show();
+                Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         }
 

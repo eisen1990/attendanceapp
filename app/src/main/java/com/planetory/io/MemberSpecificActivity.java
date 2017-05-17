@@ -1,9 +1,12 @@
 package com.planetory.io;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -24,19 +27,21 @@ public class MemberSpecificActivity extends AppCompatActivity {
     TextView spec_phone;
     TextView spec_store;
     TextView spec_punch;
+    ImageButton time_edit_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user_phone = getIntent().getExtras().getString("specific_phone");
-
         setContentView(R.layout.activity_member_specific);
+
+        buttonSetting();
 
         memberSchduleURLTask = new MemberSchduleURLTask(user_phone);
         memberSchduleURLTask.execute();
     }
 
-    private void buttonSetting(String punchin, String punchout, String store) {
+    private void contentSetting(String punchin, String punchout, String store) {
         spec_phone = (TextView) findViewById(R.id.specific_member_phone);
         spec_phone.setText(user_phone);
 
@@ -45,6 +50,28 @@ public class MemberSpecificActivity extends AppCompatActivity {
 
         spec_store = (TextView) findViewById(R.id.specific_member_store);
         spec_store.setText(store);
+
+        time_edit_button = (ImageButton) findViewById(R.id.edit_punchtime);
+        time_edit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MemberSpecificActivity.this, PunchTimeEditActivity.class);
+                intent.putExtra("user_phone", user_phone);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void buttonSetting() {
+        ImageButton btn_back = (ImageButton) findViewById(R.id.activity_member_specific_back_btn);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
     }
 
     private class MemberSchduleURLTask extends AsyncTask<Void, Void, String> {
@@ -89,7 +116,7 @@ public class MemberSpecificActivity extends AppCompatActivity {
                 Log.d("eisen", s);
             }
             Log.d("eisen", s);
-            buttonSetting(punchin, punchout, store);
+            contentSetting(punchin, punchout, store);
         }
 
         @Override

@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_punchoutaccept"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_navi_strech"
             android:title="@string/punchoutaccept" />
         <item
             android:id="@+id/nav_memberinfo"

@@ -106,7 +106,8 @@
 
     <string name="title_activity_leader_main">LeaderMainActivity</string>
 
-    <!-- 리더 모드 네비게이션 -->
+    <!-- 네비게이션 -->
+    <string name="myhistory">내출퇴근이력</string>
     <string name="punchoutaccept">퇴근 시각 승인</string>
     <string name="memberinfo">직원정보</string>
     <string name="storeinfo">근무지정보</string>
@@ -114,6 +115,8 @@
 
     <string name="logout">로그아웃</string>
 
+    <string name="specific_phone">휴대폰번호</string>
     <string name="specific_store">근무지</string>
+    <string name="specific_punch">근무시간</string>
 
 </resources>

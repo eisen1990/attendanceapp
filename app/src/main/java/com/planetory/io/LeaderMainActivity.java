@@ -18,6 +18,8 @@ import android.widget.Button;
 public class LeaderMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    BackPressCloseHandler backPressCloseHandler;
+
     Button NavigationBtn;
 
     private String user_phone;
@@ -55,6 +57,8 @@ public class LeaderMainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        backPressCloseHandler = new BackPressCloseHandler(this);
     }
 
     private void setButtons() {
@@ -82,16 +86,17 @@ public class LeaderMainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            backPressCloseHandler.onBackPressed();
         }
     }
-
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.leader_main, menu);
         return true;
     }
+    */
 
     /*
     @Override
