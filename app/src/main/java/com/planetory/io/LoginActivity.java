@@ -163,11 +163,6 @@ public class LoginActivity extends AppCompatActivity {
             } else if (s.equals(RestURL.NULL_STRING)) {
                 Log.d("eisen", "Server Error");
                 Toast.makeText(LoginActivity.this, ServerError, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra(MainActivity.INTENT_USER_PHONE, login_phone);
-                intent.putExtra(MainActivity.INTENT_USER_PASSWORD, login_password);
-                startActivity(intent);
-                finish();
             } else {
                 Log.d("eisen", "post error");
                 Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
