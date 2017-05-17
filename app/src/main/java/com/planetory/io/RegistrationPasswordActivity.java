@@ -141,10 +141,11 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
+            if (s == null) s = RestURL.NULL_STRING + "\0";
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
 
-            if (s.equals("addUser")) {
+            if (s.equals(RestURL.REGISTER_SUCCESS)) {
                 Toast.makeText(RegistrationPasswordActivity.this, RegistrationComplete, Toast.LENGTH_SHORT).show();
                 Log.d("Riemann", reg_phone);
                 Log.d("Riemann", reg_password);
@@ -152,8 +153,8 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
                 /*
                     회원가입 성공 시 로그인 계정 정보를 같이 넘겨서 자동으로 로그인되게 만들어야됨.
                  */
-                intent.putExtra("user_phone", reg_phone);
-                intent.putExtra("user_password", reg_password);
+                intent.putExtra(MainActivity.INTENT_USER_PHONE, reg_phone);
+                intent.putExtra(MainActivity.INTENT_USER_PASSWORD, reg_password);
                 startActivity(intent);
                 finish();
             } else {
@@ -182,11 +183,12 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("GET");
 
                 int resCode = httpURLConnection.getResponseCode();
-                if (resCode == httpURLConnection.HTTP_OK) {
+                if (resCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                    String line = null;
+                    String line;
                     while ((line = bufferedReader.readLine()) != null) {
-                        output.append(line + "\n");
+                        output.append(line);
+                        output.append('\n');
                     }
                 }
 
@@ -196,7 +198,7 @@ public class RegistrationPasswordActivity extends AppCompatActivity {
                 Log.d("Registration Fail", "URL exception");
             }
 
-            return null;
+            return RestURL.NULL_STRING + "\0";
         }
     }
 }

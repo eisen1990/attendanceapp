@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -159,10 +158,12 @@ public class RegistrationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
+            if (s == null) s = RestURL.NULL_STRING + "\0";
             Log.d("eisen",s);
             s = s.substring(0,s.length()-1);
             Log.d("eisen after",s);
-            if (s.equals("checkUser")) {
+
+            if (s.equals(RestURL.REGISTER_NO_ERROR)) {
                 /*
                     비밀번호 설정 Activity로 넘어가는 Case
                     intent로 현재 Activity에서 구한 Phone Number도 같이 넘겨준다.
@@ -173,7 +174,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
 
-            } else if (s.equals("checkUserExisted")) {
+            } else if (s.equals(RestURL.REGISTER_EXIST)) {
                 /*
                     이미 회원가입된 번호.
                     로그인 화면으로 이동시켜주는 Snackbar action
@@ -187,7 +188,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     }
                 }).show();
 
-            } else if (s.equals("checkUserNoRegistration")) {
+            } else if (s.equals(RestURL.REGISTER_ID_ERROR)) {
                 /*
                     핸드폰 번호가 회사에 등록되지 않은 계정
                     사업체에 사업장 관리자에게 등록 요청하는 Snackbar
@@ -242,7 +243,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 Log.d("Registration Fail", "URL exception");
             }
 
-            return "URLerror";
+            return RestURL.NULL_STRING + "\0";
         }
     }
 

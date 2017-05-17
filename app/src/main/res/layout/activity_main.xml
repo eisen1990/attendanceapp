@@ -25,7 +25,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="bottom|end"
             android:id="@+id/role_switching_btn"
             android:text="@string/role_switching_to_leader"
             android:background="#3DB7CC"
