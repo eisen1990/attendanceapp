@@ -29,7 +29,7 @@
             android:id="@+id/role_switching_btn"
             android:text="@string/role_switching_to_leader"
             android:background="#3DB7CC"
-            android:textColor="@color/white"
+            android:textColor="#FFF"
             />
 
     </android.support.design.widget.NavigationView>

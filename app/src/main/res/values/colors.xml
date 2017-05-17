@@ -9,6 +9,6 @@
 
     <color name="IO_basic">#3299FE</color>
 
-    <color name="white">#FFFFFF</color>
     <color name="lightGray">#E0E0E0</color>
+    <color name="tLightGray">#55E0E0E0</color>
 </resources>

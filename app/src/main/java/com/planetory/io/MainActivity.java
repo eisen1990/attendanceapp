@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     BackPressCloseHandler backPressCloseHandler;
     WifiControl wifiControl;
     private URLTask urlTask = null;
-    private String user_phone;
+    private String user_phone; //아이디
 
     static final String DEFAULT_PREFERENCE = "io_pref";
     static final int REQUEST_BREAK = 0;
@@ -53,9 +54,10 @@ public class MainActivity extends AppCompatActivity
     static final int EMPLOYEE_STATE_LEAVE = 0;
     static final int EMPLOYEE_STATE_WORK = 1;
     static final int EMPLOYEE_STATE_BREAK = 2;
-    static final int EMPLOYEE_STATE_BLANK = 3;
 
     private final String PREF_EMPLOYEE_STATE = "employee_state";
+    private final String PREF_LAST_LOGIN = "last_login";
+    private final String PREF_LAST_LOGIN_ID = "last_login_id";
     private int EMPLOYEE_STATE;
 
     private final int LEAVE_TIMER_ID = 0;
@@ -78,17 +80,11 @@ public class MainActivity extends AppCompatActivity
     Button btnReturn;
     Button btnPunchout;
     Button NavigationBtn;
+    ImageButton btnAlarm;
 
     private Timer leaveTimer;
     private Timer workTimer;
 
-
-    private String getCurrentTime() {
-        long time = System.currentTimeMillis();
-        SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
-        String t = day.format(new Date(time));
-        return t;
-    }
 
     Handler handler = new Handler(new Handler.Callback() {
 
@@ -149,6 +145,31 @@ public class MainActivity extends AppCompatActivity
         return day;
     }
 
+    private final int FORMAT_ALL = 0;
+    private final int FORMAT_DATE = 1;
+    private final int FORMAT_TIME = 2;
+
+    private String getCurrentTime(int format) {
+        //띄어쓰기가 있으면 서버 에러 발생?
+        //현재 시간을 여러 포맷으로 돌려주는 함수
+        long time = System.currentTimeMillis();
+        SimpleDateFormat day = new SimpleDateFormat();
+
+        switch(format){
+            case FORMAT_ALL:
+                day = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault());
+                break;
+            case FORMAT_DATE:
+                day = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                break;
+            case FORMAT_TIME:
+                day = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                break;
+        }
+
+        return day.format(new Date(time));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,15 +196,12 @@ public class MainActivity extends AppCompatActivity
         btnPause = (Button) findViewById(R.id.activity_main_work_btn_pause);
         btnReturn = (Button) findViewById(R.id.activity_main_work_btn_return);
         btnPunchout = (Button) findViewById(R.id.activity_main_work_btn_punch_out);
+        btnAlarm = (ImageButton) findViewById(R.id.toolbar_main_btn_alarm);
         NavigationBtn = (Button) findViewById(R.id.role_switching_btn);
 
         basicSetting();
         buttonSetting();
-
-        //서버로 연결해서 처리하는 부분.
-        urlTask = new URLTask(user_phone);
-        urlTask.execute(RestURL.CHECK_PARAM_WORKON);
-        stateSetting(false);
+        getDatafromServer();
     }
 
     private void basicSetting() {
@@ -209,7 +227,7 @@ public class MainActivity extends AppCompatActivity
                     //Wifi가 활성화 되있는 경우
                     //서버에 출근 시각을 전송한다.
 
-                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask = new URLTask(user_phone, getCurrentTime(FORMAT_ALL), wifiControl.scanWifi(""));
                     urlTask.execute(RestURL.CHECK_PARAM_IN);
 
                 } else {
@@ -244,7 +262,7 @@ public class MainActivity extends AppCompatActivity
 
                     //Wifi가 활성화 되있는 경우
                     //서버에 퇴근 시간을 전송한다.
-                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask = new URLTask(user_phone, getCurrentTime(FORMAT_ALL), wifiControl.scanWifi(""));
                     urlTask.execute(RestURL.CHECK_PARAM_OUT);
 
                 } else {
@@ -282,9 +300,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        /*
-            이하는 일단 테스트용
-         */
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -314,19 +329,35 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
-//                stateSetting(true);
+                stateSetting(true);
+            }
+        });
+
+        //테스트용
+        btnAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, TestActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
 
+    private void getDatafromServer(){
+        //해당 날짜에 앱을 처음 킨 경우 서버에서 데이터 얻어오도록,
+        String LastLogin = APP_PREF.getString(PREF_LAST_LOGIN, "");
+        String LastLoginID = APP_PREF.getString(PREF_LAST_LOGIN_ID, "");
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_BREAK) {
-            if (resultCode == RESULT_OK) {
-                EMPLOYEE_STATE = EMPLOYEE_STATE_BREAK;
-                stateSetting(true);
-            }
+        if (LastLoginID.equals(user_phone) && LastLogin.equals(getCurrentTime(FORMAT_DATE))){
+            stateSetting(false);
+        } else{
+            SharedPreferences.Editor editor = APP_PREF.edit();
+            editor.putString(PREF_LAST_LOGIN, getCurrentTime(FORMAT_DATE));
+            editor.putString(PREF_LAST_LOGIN_ID, user_phone);
+            editor.apply();
+            urlTask = new URLTask(user_phone);
+            urlTask.execute(RestURL.CHECK_PARAM_WORKON);
         }
     }
 
@@ -341,7 +372,7 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE);
             editor.apply();
         } else {
-            EMPLOYEE_STATE = APP_PREF.getInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE_BLANK);
+            EMPLOYEE_STATE = APP_PREF.getInt(PREF_EMPLOYEE_STATE, EMPLOYEE_STATE_LEAVE);
         }
 
         switch (EMPLOYEE_STATE) {
@@ -355,11 +386,6 @@ public class MainActivity extends AppCompatActivity
             case EMPLOYEE_STATE_WORK:
                 workSetting();
                 breakSetting(false);
-                break;
-            case EMPLOYEE_STATE_BLANK:
-                //서버에서 상태를 가져오는 코드가 들어갈 부분
-                EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
-                leaveSetting();
                 break;
         }
     }
@@ -417,9 +443,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private boolean isWifiValid() {
-        //Wifi 리스트를 체크해서 서버에 등록된 Wi-fi가 있는지 확인.
-        return true;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_BREAK) {
+            if (resultCode == RESULT_OK) {
+                EMPLOYEE_STATE = EMPLOYEE_STATE_BREAK;
+                stateSetting(true);
+            }
+        }
     }
 
 
@@ -469,13 +500,13 @@ public class MainActivity extends AppCompatActivity
         private String time;
         private String wifiaplist;
 
-        public URLTask(String phone) {
+        URLTask(String phone) {
             this.phone = phone;
             this.time = null;
             this.wifiaplist = null;
         }
 
-        public URLTask(String phone, String time, String wifiaplist) {
+        URLTask(String phone, String time, String wifiaplist) {
             this.phone = phone;
             this.time = time;
             this.wifiaplist = wifiaplist;
@@ -522,6 +553,8 @@ public class MainActivity extends AppCompatActivity
                 //출근을 처리하는 부분
                 EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
                 stateSetting(true);
+            } else if (s.equals(RestURL.PUNCHIN_FAIL)) {
+                //신규 사업장 등록 코드가 들어갈 부분.
             } else if (s.equals(RestURL.PUNCHOUT_SUCCESS)) {
                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                 View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
@@ -556,15 +589,20 @@ public class MainActivity extends AppCompatActivity
                 EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
                 stateSetting(true);
             }
+            //로그인할 때 리더와 근무자를 구분하기?
             else if (s.equals("WORKONleader")) {
-                workSetting();
+                EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
+                stateSetting(true);
             } else if (s.equals("WORKNOTYETleader")) {
-                leaveSetting();
+                EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
+                stateSetting(true);
             } else if (s.equals("WORKONworker")){
-                workSetting();
+                EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
+                stateSetting(true);
                 NavigationBtn.setVisibility(View.INVISIBLE);
             } else if (s.equals("WORKNOTYETworker")) {
-                leaveSetting();
+                EMPLOYEE_STATE = EMPLOYEE_STATE_LEAVE;
+                stateSetting(true);
                 NavigationBtn.setVisibility(View.INVISIBLE);
             }
         }

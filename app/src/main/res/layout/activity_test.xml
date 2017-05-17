@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <com.planetory.io.PunchTracker
+        android:layout_width="@dimen/punch_tracker_size"
+        android:layout_height="@dimen/punch_tracker_size"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/punchTracker" />
+
+    <Button
+        android:id="@+id/button_punch_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="출근"
+        android:layout_alignTop="@+id/button_break"
+        android:layout_alignStart="@+id/punchTracker" />
+
+    <Button
+        android:id="@+id/button_break"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="자리비움"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/punchTracker"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/button_return"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="복귀"
+        android:layout_alignTop="@+id/button_break"
+        android:layout_alignStart="@+id/button_break" />
+
+    <Button
+        android:id="@+id/button_punch_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="퇴근"
+        android:layout_alignTop="@+id/button_break"
+        android:layout_alignEnd="@+id/punchTracker" />
 
 </RelativeLayout>

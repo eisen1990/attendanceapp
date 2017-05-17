@@ -143,15 +143,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.d("eisen", s);
             s = s.substring(0, s.length() - 1);
 
-            /*테스트*/
-            Intent intentT = new Intent(LoginActivity.this, MainActivity.class);
-            intentT.putExtra("user_phone", login_phone);
-            intentT.putExtra("user_password", login_password);
-            startActivity(intentT);
-            finish();
-            if (!s.equals("")) return;
-            /**/
-
             if (s.equals(RestURL.LOGIN_SUCCESS)) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 /*
@@ -172,6 +163,11 @@ public class LoginActivity extends AppCompatActivity {
             } else if (s.equals(RestURL.NULL_STRING)) {
                 Log.d("eisen", "Server Error");
                 Toast.makeText(LoginActivity.this, ServerError, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra(MainActivity.INTENT_USER_PHONE, login_phone);
+                intent.putExtra(MainActivity.INTENT_USER_PASSWORD, login_password);
+                startActivity(intent);
+                finish();
             } else {
                 Log.d("eisen", "post error");
                 Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
