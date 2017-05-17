@@ -41,7 +41,7 @@ public class MemberSpecificActivity extends AppCompatActivity {
         memberSchduleURLTask.execute();
     }
 
-    private void contentSetting(String punchin, String punchout, String store) {
+    private void contentSetting(final String punchin, final String punchout, String store) {
         spec_phone = (TextView) findViewById(R.id.specific_member_phone);
         spec_phone.setText(user_phone);
 
@@ -57,6 +57,8 @@ public class MemberSpecificActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MemberSpecificActivity.this, PunchTimeEditActivity.class);
                 intent.putExtra("user_phone", user_phone);
+                intent.putExtra("user_punchin", punchin);
+                intent.putExtra("user_punchout", punchout);
                 startActivity(intent);
             }
         });

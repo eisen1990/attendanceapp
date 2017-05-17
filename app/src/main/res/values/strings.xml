@@ -100,6 +100,8 @@
     <string name="activity_break_request_other">기타</string>
     <string name="activity_break_request_other_hint">입력해 주세요.</string>
 
+    <string name="activity_punch_edit_error">변경된 시간을 입력해주세요</string>
+
 
     <string name="role_switching_to_leader">리더 모드로 변경</string>
     <string name="role_switching_to_worker">근무자 모드로 변경</string>
@@ -118,5 +120,8 @@
     <string name="specific_phone">휴대폰번호</string>
     <string name="specific_store">근무지</string>
     <string name="specific_punch">근무시간</string>
+    <string name="edit_punch_time">근무시간 정보 변경</string>
+
+    <string name="punch_time">근무시간</string>
 
 </resources>

@@ -139,35 +139,41 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
-            if (s == null) s = RestURL.NULL_STRING + "\0";
+            if (s == null) s = RestURL.NULL_STRING;
             Log.d("eisen", s);
-            s = s.substring(0, s.length() - 1);
+            try {
+                s = s.substring(0, s.length() - 1);
+                Log.d("eisen1", s);
 
-            if (s.equals(RestURL.LOGIN_SUCCESS)) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                if (s.equals(RestURL.LOGIN_SUCCESS)) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 /*
                     로그인 정보를 Main activity에 전달해야된다.
                  */
-                intent.putExtra(MainActivity.INTENT_USER_PHONE, login_phone);
-                intent.putExtra(MainActivity.INTENT_USER_PASSWORD, login_password);
-                startActivity(intent);
-                finish();
-            } else if (s.equals(RestURL.LOGIN_WRONG_PASSWORD)) {
-                Log.d("eisen", "Password fail");
-                Txtpassword.setError(WrongPassword);
-                Snackbar.make(getCurrentFocus(), WrongPassword, Snackbar.LENGTH_LONG).show();
-            } else if (s.equals(RestURL.LOGIN_WRONG_ID)) {
-                Log.d("eisen", "Unregistered user");
-                TxtphoneNumber.setError(UnregisteredNumber);
-                Snackbar.make(getCurrentFocus(), UnregisteredNumber, Snackbar.LENGTH_LONG).show();
-            } else if (s.equals(RestURL.NULL_STRING)) {
-                Log.d("eisen", "Server Error");
+                    intent.putExtra(MainActivity.INTENT_USER_PHONE, login_phone);
+                    intent.putExtra(MainActivity.INTENT_USER_PASSWORD, login_password);
+                    startActivity(intent);
+                    finish();
+                } else if (s.equals(RestURL.LOGIN_WRONG_PASSWORD)) {
+                    Log.d("eisen", "Password fail");
+                    Txtpassword.setError(WrongPassword);
+                    Snackbar.make(getCurrentFocus(), WrongPassword, Snackbar.LENGTH_LONG).show();
+                } else if (s.equals(RestURL.LOGIN_WRONG_ID)) {
+                    Log.d("eisen", "Unregistered user");
+                    TxtphoneNumber.setError(UnregisteredNumber);
+                    Snackbar.make(getCurrentFocus(), UnregisteredNumber, Snackbar.LENGTH_LONG).show();
+                } else if (s.equals(RestURL.NULL_STRING)) {
+                    Log.d("eisen", "Server Error");
+                    Toast.makeText(LoginActivity.this, ServerError, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d("eisen", "post error");
+                    Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
+                }
+                Log.d("eisen", "Login 액티비티 오류");
+            } catch (Exception e) {
+                e.printStackTrace();
                 Toast.makeText(LoginActivity.this, ServerError, Toast.LENGTH_SHORT).show();
-            } else {
-                Log.d("eisen", "post error");
-                Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
             }
-            Log.d("eisen", "Login 액티비티 오류");
         }
 
         @Override
@@ -178,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             String urlString = RestURL.LOGINUSER_URL + "phone=" + login_phone + "&password=" + login_password;
-
+            Log.d("Login URL : ", urlString);
             StringBuilder output = new StringBuilder();
 
             try {
@@ -187,7 +193,6 @@ public class LoginActivity extends AppCompatActivity {
                 httpURLConnection.setConnectTimeout(10000);
                 httpURLConnection.setReadTimeout(10000);
                 httpURLConnection.setRequestMethod("GET");
-
                 int resCode = httpURLConnection.getResponseCode();
                 if (resCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -197,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
                         output.append("\n");
                     }
                 }
-
                 return output.toString();
 
             } catch (Exception e) {

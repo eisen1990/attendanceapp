@@ -9,7 +9,8 @@ class RestURL {
     static final String CHECKOUTOFWORK_URL = SERVER_URL + "checkoutofwork/";
     static final String CHECKWORKON_URL = SERVER_URL + "workon/";
     static final String GETMEMBERS_URL = SERVER_URL + "getMembers";
-    static public final String SPECMEMBER_URL = SERVER_URL + "specMember/";
+    static final String SPECMEMBER_URL = SERVER_URL + "specMember/";
+    static final String EDITPUNCH_URL = SERVER_URL + "editPunchTime/";
 
     static final String NULL_STRING = "serverError";
 
@@ -30,4 +31,8 @@ class RestURL {
     //TODO : 이 경우들이 존재하는지?
     static final String PUNCHIN_FAIL = "INOK";
     static final String PUNCHOUT_FAIL = "OUTOK";
+
+    static final String EDIT_ERROR = "EDITERROR";
+    static final String EDIT_OK = "EDITPUNCHOK";
+    static final String EDIT_EXCEPTION = "EDITPUNCHEXCEPTION";
 }
