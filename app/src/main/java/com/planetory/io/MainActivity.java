@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity
                 txtLeaveMeridiem.setText(sMeridiem);
                 txtLeaveDate.setText(sDate);
             } else if (msg.what == WORK_TIMER_ID) {
+                /*
+                    여기서 ClockView 띄워주면 될 듯하다.
+                 */
                 CharSequence cTime = calendar.get(Calendar.HOUR) >= 10 ? DateFormat.format("hh:mm", calendar) :
                         DateFormat.format("h:mm", calendar);
                 String sClock = sDate + ' ' + sMeridiem + ' ' + cTime.toString();
