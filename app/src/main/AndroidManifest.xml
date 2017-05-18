@@ -86,7 +86,9 @@
         <activity android:name=".MemberInfoActivity" />
         <activity android:name=".MemberSpecificActivity" />
         <activity android:name=".SettingActivity" />
-        <activity android:name=".PunchTimeEditActivity"></activity>
+        <activity android:name=".PunchTimeEditActivity" />
+        <activity android:name=".RequestWifiActivity" />
+        <activity android:name=".AcceptWifiActivity"></activity>
     </application>
 
 </manifest>

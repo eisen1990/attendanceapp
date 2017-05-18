@@ -121,6 +121,26 @@ public class WifiControl {
         return wifiItems;
     }
 
+    public String scanWifi(int i) {
+        String params = "";
+        int cnt = 0;
+
+        WifiManager wifiManager;
+        ConnectivityManager connManager;
+        List<ScanResult> scanResult;
+        SimpleAdapter adapter;
+
+        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+
+        scanResult = wifiManager.getScanResults();
+        for (ScanResult result : scanResult) {
+            params += result.BSSID + " ";
+            if(i > 9) break;
+            i++;
+        }
+        return params;
+    }
+
     public boolean isLocationAwareness() {
         /*
             위치 인식 메서드 추후 구현

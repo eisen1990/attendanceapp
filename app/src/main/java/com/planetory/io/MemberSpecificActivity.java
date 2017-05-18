@@ -59,7 +59,7 @@ public class MemberSpecificActivity extends AppCompatActivity {
                 intent.putExtra("user_phone", user_phone);
                 intent.putExtra("user_punchin", punchin);
                 intent.putExtra("user_punchout", punchout);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -74,6 +74,16 @@ public class MemberSpecificActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("result 굿? ", String.valueOf(resultCode));
+        if(resultCode == 1) {
+            //resultCode 1로 PunchTimeEditActivity로부터 받는다. 성공 코드
+            memberSchduleURLTask = new MemberSchduleURLTask(user_phone);
+            memberSchduleURLTask.execute();
+        }
     }
 
     private class MemberSchduleURLTask extends AsyncTask<Void, Void, String> {

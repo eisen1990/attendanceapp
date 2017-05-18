@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 public class LeaderMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -21,6 +22,7 @@ public class LeaderMainActivity extends AppCompatActivity
     BackPressCloseHandler backPressCloseHandler;
 
     Button NavigationBtn;
+    ImageButton AlarmBtn;
 
     private String user_phone;
 
@@ -64,17 +66,25 @@ public class LeaderMainActivity extends AppCompatActivity
     private void setButtons() {
         NavigationBtn = (Button) findViewById(R.id.role_switching_btn);
         NavigationBtn.setOnClickListener(onClickListener);
+
+        AlarmBtn = (ImageButton) findViewById(R.id.toolbar_main_btn_alarm);
+        AlarmBtn.setOnClickListener(onClickListener);
     }
 
     Button.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Intent intent;
             switch (v.getId()) {
                 case R.id.role_switching_btn:
-                    Intent intent = new Intent(LeaderMainActivity.this, MainActivity.class);
+                    intent = new Intent(LeaderMainActivity.this, MainActivity.class);
                     intent.putExtra("user_phone", user_phone);
                     startActivity(intent);
                     finish();
+                    break;
+                case R.id.toolbar_main_btn_alarm:
+                    intent = new Intent(LeaderMainActivity.this, AcceptWifiActivity.class);
+                    startActivity(intent);
                     break;
             }
         }

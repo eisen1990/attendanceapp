@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -212,7 +213,7 @@ public class MainActivity extends AppCompatActivity
                     //Wifi가 활성화 되있는 경우
                     //서버에 출근 시각을 전송한다.
                     //여기서 wifi scan 후 JSON array 스트링으로 전송해주고 API에서 다시 처리 urlencode 이용해서 보내야됨
-                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(1));
                     urlTask.execute(RestURL.CHECK_PARAM_IN);
 
                 } else {
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity
 
                     //Wifi가 활성화 되있는 경우
                     //서버에 퇴근 시간을 전송한다.
-                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(""));
+                    urlTask = new URLTask(user_phone, getCurrentTime(), wifiControl.scanWifi(1));
                     urlTask.execute(RestURL.CHECK_PARAM_OUT);
 
                 } else {
@@ -425,12 +426,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private boolean isWifiValid() {
-        //Wifi 리스트를 체크해서 서버에 등록된 Wi-fi가 있는지 확인.
-        return true;
-    }
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -489,6 +484,30 @@ public class MainActivity extends AppCompatActivity
             this.wifiaplist = wifiaplist;
         }
 
+        private void requestWifiDialog() {
+            LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+            View dView = inflater.inflate(R.layout.dialog_main_request_wifi, frameLayout, false);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setView(dView);
+            builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.setPositiveButton(R.string.dialog_main_request_wifi, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.d("eisen", "request Wifi");
+                    Intent intent = new Intent(MainActivity.this, RequestWifiActivity.class);
+                    intent.putExtra("wifiaplist", wifiaplist);
+                    intent.putExtra("user_phone", phone);
+                    startActivity(intent);
+                }
+            });
+            builder.create().show();
+        }
+
         @Override
         protected void onPostExecute(String s) {
             urlTask = null;
@@ -530,6 +549,7 @@ public class MainActivity extends AppCompatActivity
                 //출근을 처리하는 부분
                 EMPLOYEE_STATE = EMPLOYEE_STATE_WORK;
                 stateSetting(true);
+                breakSetting(true);
             } else if (s.equals(RestURL.PUNCHOUT_SUCCESS)) {
                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                 View dView = inflater.inflate(R.layout.dialog_main_work_complete, layoutLeave, false);
@@ -573,19 +593,21 @@ public class MainActivity extends AppCompatActivity
                 workSetting();
             } else if (s.equals("WORKNOTYETworker")) {
                 leaveSetting();
-            } else if (s.equals("WORKONunknown")){
+            } else if (s.equals("WORKONunknown")) {
                 workSetting();
-            }
-            else if (s.equals("WORKNOTYETunknown")) {
+            } else if (s.equals("INOKNowifi")) {
+                requestWifiDialog();
+            } else if (s.equals("OUTOKNowifi")) {
+                requestWifiDialog();
+            } else if (s.equals("WORKNOTYETunknown")) {
                 leaveSetting();
                 Toast.makeText(MainActivity.this, "직급을 알 수 없습니다.", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 /*
                     서버 에러일 경우 로그인 액티비티로 돌아간다.
                  */
                 Toast.makeText(MainActivity.this, "Server error", Toast.LENGTH_SHORT).show();
-                Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }

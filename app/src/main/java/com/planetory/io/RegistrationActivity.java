@@ -145,12 +145,12 @@ public class RegistrationActivity extends AppCompatActivity {
         private String check_phone;
         private String check_company;
 
-        URLTask(String phone) {
+        public URLTask(String phone) {
             check_phone = phone;
             check_company = null;
         }
 
-        URLTask(String phone, String company) {
+        public URLTask(String phone, String company) {
             check_phone = phone;
             check_company = company;
         }

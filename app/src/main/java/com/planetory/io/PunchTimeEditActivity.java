@@ -29,6 +29,7 @@ public class PunchTimeEditActivity extends AppCompatActivity {
     private String user_punchout;
 
     private String Edit_error;
+    private String Edit_complete;
 
     private EditPunch editPunch = null;
 
@@ -46,6 +47,7 @@ public class PunchTimeEditActivity extends AppCompatActivity {
         user_punchin = getIntent().getExtras().getString("user_punchin");
         user_punchout = getIntent().getExtras().getString("user_punchout");
         Edit_error = getString(R.string.activity_punch_edit_error);
+        Edit_complete = getString(R.string.activity_punch_edit_complete);
 
         setContentView(R.layout.activity_punch_time_edit);
 
@@ -93,6 +95,8 @@ public class PunchTimeEditActivity extends AppCompatActivity {
     };
 
     private String convertInitDate(String date) {
+        date = date.substring(0, date.length() -1);
+        if(date.length() < 15) return "NULL";
         String result = "";
         String temp = date.substring(11, 13);
         int h = Integer.parseInt(temp);
@@ -187,10 +191,14 @@ public class PunchTimeEditActivity extends AppCompatActivity {
             editPunch = null;
             s = s.substring(0, s.length() - 1);
 
-            if(s.equals(RestURL.EDIT_ERROR)) {
+            if (s.equals(RestURL.EDIT_ERROR)) {
                 Toast.makeText(PunchTimeEditActivity.this, Edit_error, Toast.LENGTH_SHORT).show();
             } else if (s.equals(RestURL.EDIT_OK)) {
-
+                Toast.makeText(PunchTimeEditActivity.this, Edit_complete, Toast.LENGTH_SHORT).show();
+                //startActivityForResult(intent, 1)로 전달하였음
+                //setResult는 resultCode 1 성공 코드로 지정.
+                setResult(1);
+                finish();
             } else if (s.equals(RestURL.EDIT_EXCEPTION)) {
                 Toast.makeText(PunchTimeEditActivity.this, "DB exception", Toast.LENGTH_SHORT).show();
             } else {
@@ -211,8 +219,8 @@ public class PunchTimeEditActivity extends AppCompatActivity {
             if (phone_db == null || punchin_db == null || punchout_db == null) {
                 return RestURL.EDIT_ERROR;
             } else {
-                Log.d("setPunchin : ", punchin_db);
-                Log.d("setPunchout : ", punchout_db);
+//                Log.d("setPunchin : ", punchin_db);
+//                Log.d("setPunchout : ", punchout_db);
                 urlString = RestURL.EDITPUNCH_URL + "phone=" + phone_db + "&punchin=" + punchin_db + "&punchout=" + punchout_db;
             }
             StringBuilder output = new StringBuilder();

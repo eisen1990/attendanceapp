@@ -11,6 +11,9 @@ class RestURL {
     static final String GETMEMBERS_URL = SERVER_URL + "getMembers";
     static final String SPECMEMBER_URL = SERVER_URL + "specMember/";
     static final String EDITPUNCH_URL = SERVER_URL + "editPunchTime/";
+    static final String REQUESTWIFI_URL = SERVER_URL + "requestWifi/";
+    static final String ACCEPTWIFI_URL = SERVER_URL + "acceptWifi/";
+    static final String ACCEPTOKWIFI_URL = SERVER_URL + "acceptWifi/OK/";
 
     static final String NULL_STRING = "serverError";
 

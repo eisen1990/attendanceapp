@@ -90,6 +90,8 @@
     <string name="dialog_main_pause_title">자리비움</string>
     <string name="dialog_main_pause_message">자리비움을 신청하시겠습니까?</string>
     <string name="dialog_main_wifi_enabled">활성화하기</string>
+    <string name="dialog_main_request_wifi">사업장 추가</string>
+    <string name="dialog_main_request_wifi_txt">주변에 등록된 사업장을 찾을 수 없습니다. 사업장에서 출근해 체크해주세요 현재 계신 곳을 신규 사업장으로 추가하려면 사업창 추가를 선택해주세요.</string>
 
     <string name="activity_break_request_app_title">자리비움 신청</string>
     <string name="activity_break_request_title">근무 상태를 자리비움 중으로 변경하시겠습니까?</string>
@@ -101,6 +103,7 @@
     <string name="activity_break_request_other_hint">입력해 주세요.</string>
 
     <string name="activity_punch_edit_error">변경된 시간을 입력해주세요</string>
+    <string name="activity_punch_edit_complete">업무시간 정보가 변경되었습니다</string>
 
 
     <string name="role_switching_to_leader">리더 모드로 변경</string>
