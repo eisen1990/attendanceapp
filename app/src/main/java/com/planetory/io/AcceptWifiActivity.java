@@ -56,6 +56,8 @@ public class AcceptWifiActivity extends AppCompatActivity {
                 s = "getAcceptWifiList Fail";
             }
 
+            s = s.substring(0, s.length() - 1);
+
             if (s.indexOf('{') >= 0) {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
