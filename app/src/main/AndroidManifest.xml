@@ -88,7 +88,8 @@
         <activity android:name=".SettingActivity" />
         <activity android:name=".PunchTimeEditActivity" />
         <activity android:name=".RequestWifiActivity" />
-        <activity android:name=".AcceptWifiActivity"></activity>
+        <activity android:name=".AcceptWifiActivity" />
+        <activity android:name=".RequestWifiSearchActivity"></activity>
     </application>
 
 </manifest>

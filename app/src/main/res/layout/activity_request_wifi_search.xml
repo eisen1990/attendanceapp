@@ -2,10 +2,9 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_request_wifi_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.planetory.io.RequestWifiActivity">
+    tools:context="com.planetory.io.RequestWifiSearchActivity">
 
     <ImageButton
         android:id="@+id/activity_back_btn"
@@ -24,49 +23,62 @@
         android:id="@+id/activity_text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/activity_request_apply_txt1"
+        android:text="@string/activity_request_wifi_txt1"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_back_btn" />
 
     <TextView
         android:id="@+id/activity_text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/activity_request_apply_txt2"
+        android:text="@string/activity_request_wifi_txt2"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_text1" />
 
     <LinearLayout
-        android:id="@+id/map_layout"
+        android:id="@+id/editbox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/activity_text2"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/activity_text2">
 
-        <ImageView
-            android:id="@+id/map_image"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/activity_edit"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/google_map"/>
+            android:layout_weight="0.9"
+            android:hint="@string/activity_request_wifi_hint"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_text2" />
 
-        <TextView
-            android:id="@+id/store_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-
+        <ImageButton
+            android:id="@+id/store_search_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right"
+            app:srcCompat="@drawable/ic_search_blue" />
     </LinearLayout>
 
 
-    <Button
-        android:id="@+id/requestButton"
+    <ListView
+        android:id="@+id/store_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/activity_request_apply"
-        app:layout_constraintTop_toBottomOf="@+id/map_layout"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editbox"></ListView>
+
+    <TextView
+        android:id="@+id/store_blank"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editbox" />
 
 </android.support.constraint.ConstraintLayout>

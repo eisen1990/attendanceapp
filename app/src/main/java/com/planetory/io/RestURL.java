@@ -14,6 +14,7 @@ class RestURL {
     static final String REQUESTWIFI_URL = SERVER_URL + "requestWifi/";
     static final String ACCEPTWIFI_URL = SERVER_URL + "acceptWifi/";
     static final String ACCEPTOKWIFI_URL = SERVER_URL + "acceptWifiOK/";
+    static final String SEARCHSTORE_URL = SERVER_URL + "searchStore/";
 
     static final String NULL_STRING = "serverError";
 

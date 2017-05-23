@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -20,7 +22,8 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 public class LoadActivity extends AppCompatActivity{
 
     private BackPressCloseHandler backPressCloseHandler;
-
+    SharedPreferences LOGIN_PREF;
+    static final String LOGIN_PREFERENCE = "login_pref";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,7 +144,15 @@ public class LoadActivity extends AppCompatActivity{
 
     private boolean isLoggedIn(){
         //로그인 상태인지 확인하는 알고리즘이 들어갈 부분
-        return false;
+        LOGIN_PREF = getSharedPreferences(LOGIN_PREFERENCE, MODE_PRIVATE);
+        if(LOGIN_PREF.contains(LOGIN_PREFERENCE)) {
+//            Log.d("LoadActivity : ", LOGIN_PREF.getString(LOGIN_PREFERENCE, "shared에 자료 있음"));
+            return true;
+        }
+        else {
+//            Log.d("LoadActivity : ", LOGIN_PREF.getString(LOGIN_PREFERENCE, "shared에 자료 없음"));
+            return false;
+        }
     }
 
 

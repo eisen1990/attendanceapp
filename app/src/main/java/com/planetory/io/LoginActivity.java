@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("eisen", "post error");
                     Toast.makeText(LoginActivity.this, "unknown error", Toast.LENGTH_SHORT).show();
                 }
-                Log.d("eisen", "Login 액티비티 오류");
+//                Log.d("eisen", "Login 액티비티 오류");
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(LoginActivity.this, ServerError, Toast.LENGTH_SHORT).show();

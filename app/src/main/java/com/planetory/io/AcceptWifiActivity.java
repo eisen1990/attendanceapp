@@ -25,11 +25,15 @@ public class AcceptWifiActivity extends AppCompatActivity {
     private AcceptWifiURL acceptWifiURL = null;
     private ListView wifiListView;
     private AcceptWifiViewAdapter acceptWifiViewAdapter;
+    private String user_phone;
+
+    static final String INTENT_USER_PHONE = "user_phone";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_wifi);
+        user_phone = getIntent().getExtras().getString(INTENT_USER_PHONE);
         wifiListView = (ListView) findViewById(R.id.wifi_list);
         acceptWifiURL = new AcceptWifiURL();
         acceptWifiURL.execute("list");
@@ -38,13 +42,15 @@ public class AcceptWifiActivity extends AppCompatActivity {
     private class AcceptWifiURL extends AsyncTask<String, Void, String> {
 
         private String bssid;
+        private String phone;
 
         public AcceptWifiURL() {
             this.bssid = null;
         }
 
-        public AcceptWifiURL(String bssid) {
+        public AcceptWifiURL(String phone, String bssid) {
             this.bssid = bssid;
+            this.phone = phone;
         }
 
         @Override
@@ -88,14 +94,13 @@ public class AcceptWifiActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                        Toast.makeText(MemberInfoActivity.this, (String) parent.getAdapter().getItem(position),Toast.LENGTH_SHORT).show();
-                        acceptWifiURL = new AcceptWifiURL((String) parent.getAdapter().getItem(position));
+                        acceptWifiURL = new AcceptWifiURL(user_phone, (String) parent.getAdapter().getItem(position));
                         acceptWifiURL.execute("ok");
                     }
                 });
-            } else if( s.equals("ACCEPT")) {
+            } else if (s.equals("ACCEPT")) {
                 Toast.makeText(AcceptWifiActivity.this, "Wifi 승인 완료되었습니다.", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Log.d("eisen", s);
             }
             Log.d("eisen", s);
@@ -109,9 +114,9 @@ public class AcceptWifiActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String urlString;
-            if(params[0].equals("list"))
-            urlString = RestURL.ACCEPTWIFI_URL;
-            else urlString = RestURL.ACCEPTOKWIFI_URL + "bssid=" + bssid;
+            if (params[0].equals("list"))
+                urlString = RestURL.ACCEPTWIFI_URL;
+            else urlString = RestURL.ACCEPTOKWIFI_URL + "phone=" + phone + "&bssid=" + bssid;
             Log.d("eisen", urlString);
 
             StringBuilder output = new StringBuilder();

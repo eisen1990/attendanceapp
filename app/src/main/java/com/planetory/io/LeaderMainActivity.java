@@ -26,10 +26,12 @@ public class LeaderMainActivity extends AppCompatActivity
 
     private String user_phone;
 
+    static final String INTENT_USER_PHONE = "user_phone";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user_phone = getIntent().getExtras().getString("user_phone");
+        user_phone = getIntent().getExtras().getString(INTENT_USER_PHONE);
         setContentView(R.layout.activity_leader_main);
 
         setButtons();
@@ -78,12 +80,13 @@ public class LeaderMainActivity extends AppCompatActivity
             switch (v.getId()) {
                 case R.id.role_switching_btn:
                     intent = new Intent(LeaderMainActivity.this, MainActivity.class);
-                    intent.putExtra("user_phone", user_phone);
+                    intent.putExtra(INTENT_USER_PHONE, user_phone);
                     startActivity(intent);
                     finish();
                     break;
                 case R.id.toolbar_main_btn_alarm:
                     intent = new Intent(LeaderMainActivity.this, AcceptWifiActivity.class);
+                    intent.putExtra(INTENT_USER_PHONE, user_phone);
                     startActivity(intent);
                     break;
             }

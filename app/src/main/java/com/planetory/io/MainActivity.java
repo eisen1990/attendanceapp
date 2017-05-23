@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.constraint.ConstraintLayout;
 import android.text.format.DateFormat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,7 +29,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,10 +45,12 @@ public class MainActivity extends AppCompatActivity
     private String user_phone;
 
     static final String DEFAULT_PREFERENCE = "io_pref";
+    static final String LOGIN_PREFERENCE = "login_pref";
     static final int REQUEST_BREAK = 0;
 
     static final String INTENT_USER_PHONE = "user_phone";
     static final String INTENT_USER_PASSWORD = "user_password";
+    static final String INTENT_WIFI_LIST = "wifiaplist";
 
     static final int EMPLOYEE_STATE_LEAVE = 0;
     static final int EMPLOYEE_STATE_WORK = 1;
@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity
     String TIME_AM;
     String TIME_PM;
     SharedPreferences APP_PREF;
+    SharedPreferences LOGIN_PREF;
+    SharedPreferences.Editor LOGIN_EDITOR;
 
     FrameLayout frameLayout;
 
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        user_phone = getIntent().getExtras().getString(INTENT_USER_PHONE);
+
 
         backPressCloseHandler = new BackPressCloseHandler(this);
         wifiControl = new WifiControl(this);
@@ -168,6 +170,24 @@ public class MainActivity extends AppCompatActivity
         TIME_AM = getString(R.string.activity_main_am);
         TIME_PM = getString(R.string.activity_main_pm);
         APP_PREF = getSharedPreferences(DEFAULT_PREFERENCE, MODE_PRIVATE);
+
+        /*
+            로그인 정보 저장
+            SharedPreference 사용
+         */
+        LOGIN_PREF = getSharedPreferences(LOGIN_PREFERENCE, MODE_PRIVATE);
+        LOGIN_EDITOR = LOGIN_PREF.edit();
+        if(LOGIN_PREF.contains(LOGIN_PREFERENCE)) {
+            Log.d("Main 액티비티 : ", "데이터가 존재한다.");
+            user_phone = LOGIN_PREF.getString(LOGIN_PREFERENCE, "");
+            Log.d("그래서 데이터 가져 온다", user_phone);
+        } else {
+            user_phone = getIntent().getExtras().getString(INTENT_USER_PHONE);
+            Log.d("Main 액티비티 : ", user_phone);
+            LOGIN_EDITOR.putString(LOGIN_PREFERENCE, user_phone);
+            LOGIN_EDITOR.apply();
+        }
+
 
         frameLayout = (FrameLayout) findViewById(R.id.content_main);
         layoutLeave = (RelativeLayout) findViewById(R.id.activity_main_layout_leave);
@@ -280,7 +300,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LeaderMainActivity.class);
-                intent.putExtra("user_phone", user_phone);
+                intent.putExtra(INTENT_USER_PHONE, user_phone);
                 startActivity(intent);
                 finish();
             }
@@ -450,7 +470,11 @@ public class MainActivity extends AppCompatActivity
             intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
         } else if (id == R.id.loginout) {
-
+            LOGIN_EDITOR.clear();
+            LOGIN_EDITOR.apply();
+            intent = new Intent(MainActivity.this, StartActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -495,13 +519,13 @@ public class MainActivity extends AppCompatActivity
                     dialog.dismiss();
                 }
             });
-            builder.setPositiveButton(R.string.dialog_main_request_wifi, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.dialog_main_request_wifi_add, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Log.d("eisen", "request Wifi");
-                    Intent intent = new Intent(MainActivity.this, RequestWifiActivity.class);
-                    intent.putExtra("wifiaplist", wifiaplist);
-                    intent.putExtra("user_phone", phone);
+                    Intent intent = new Intent(MainActivity.this, RequestWifiSearchActivity.class);
+                    intent.putExtra(INTENT_WIFI_LIST, wifiaplist);
+                    intent.putExtra(INTENT_USER_PHONE, phone);
                     startActivity(intent);
                 }
             });
